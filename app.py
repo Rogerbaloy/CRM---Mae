@@ -68,7 +68,21 @@ with aba3:
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
 if senha == "1234":
-    st.write("---")
+               try:
+                # ... (sua parte de conexão que já está funcionando)
+                
+                st.write("---")
+                st.subheader("🏷️ Aplicar Desconto em Produto")
+                
+                # Cria o seletor com a lista de produtos que vem da planilha
+                lista_produtos = df_prod['Produto'].tolist()
+                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos)
+                
+                # Campo para ela digitar o desconto
+                desc_sel = st.number_input("Novo Desconto (%)", 0, 100)
+                
+                if st.button("Confirmar Desconto"):
+                     st.write("---")
                 st.subheader("📉 Registrar Venda (Baixa de Estoque)")
                 
                 # Seleciona o produto e a quantidade vendida
@@ -96,20 +110,6 @@ if senha == "1234":
                         st.rerun()
                     else:
                         st.error("Erro: Estoque insuficiente!")
-            try:
-                # ... (sua parte de conexão que já está funcionando)
-                
-                st.write("---")
-                st.subheader("🏷️ Aplicar Desconto em Produto")
-                
-                # Cria o seletor com a lista de produtos que vem da planilha
-                lista_produtos = df_prod['Produto'].tolist()
-                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos)
-                
-                # Campo para ela digitar o desconto
-                desc_sel = st.number_input("Novo Desconto (%)", 0, 100)
-                
-                if st.button("Confirmar Desconto"):
                     # Busca a linha do produto selecionado na planilha
                     cell = ws.find(prod_sel)
                     
