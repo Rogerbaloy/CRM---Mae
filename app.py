@@ -33,50 +33,32 @@ st.markdown("""<div class="header-box"><h1 class="brand-title">✨ Perfumaria e 
 # ABAS
 aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
 
-with aba1:
-    filtro = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df_prod['Categoria'].unique()))
-    df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
-    
-    if 'carrinho' not in st.session_state:
-        st.session_state.carrinho = []
-
-    # --- TUDO ISSO ABAIXO DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
-    for idx, row in df_f.iterrows():
-        if pd.isna(row['Produto']): continue
-        
-        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-        c1, c2 = st.columns([3, 1])
-        
-        with c1:
+with c1:
             codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else 0
             st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
-            estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
-            st.write(f"**Estoque:** {int(estoque_val)}")
             
-        # No loop do catálogo (Aba 1), substitua o cálculo por este:
-        
+            # --- BLINDAGEM DE ESTOQUE ---
+            estoque_raw = row['Estoque']
+            estoque_val = int(estoque_raw) if pd.notna(estoque_raw) and str(estoque_raw).replace('.','',1).isdigit() else 0
+            st.write(f"**Estoque:** {estoque_val}")
+            
         with c2:
-            # Função para converter qualquer coisa para número com segurança
-            def to_float(value):
-                try:
-                    # Remove espaços e converte para string antes de tentar o float
-                    clean_val = str(value).replace(',', '.').strip()
-                    return float(clean_val)
-                except:
-                    return 0.0
-
-            preco_base = to_float(row['Preco Venda'])
-            desc = to_float(row['Desconto'])
+            # --- BLINDAGEM DE PREÇO ---
+            preco_raw = row['Preco Venda']
+            preco_base = float(preco_raw) if pd.notna(preco_raw) and str(preco_raw).replace('.','',1).isdigit() else 0.0
+            
+            # Desconto
+            desc_raw = row['Desconto']
+            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
             
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
                 st.write(f"~~R$ {preco_base:.2f}~~")
                 st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
-                st.caption(f"Oferta: -{int(desc)}%")
             else:
-                st.write(f"### R$ {preco_final:.2f}")
+                st.write(f"### R$ {preco_base:.2f}")
                 
             # Estoque seguro
             estoque_limite = int(to_float(row['Estoque']))
