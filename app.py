@@ -68,30 +68,24 @@ with aba3:
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
     if senha == "1234":
-        # Conexão com a Planilha via API (usando os Secrets)
         try:
+            # 1. Configura a conexão usando o nome exato que está no Secrets
             import gspread
             from oauth2client.service_account import ServiceAccountCredentials
             
-            def get_sheet():
-                creds_dict = st.secrets["gcp_service_account"]
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'])
-                client = gspread.authorize(creds)
-                return client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            # ATENÇÃO: O nome aqui precisa ser idêntico ao que você colocou no Secrets (entre colchetes)
+            creds_dict = dict(st.secrets["gcp_service_account"])
             
-            sh = get_sheet()
+            scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+            client = gspread.authorize(creds)
             
-            st.write("### 🏷️ Aplicar Desconto em Produto")
-            prod_sel = st.selectbox("Escolher perfume:", df_prod['Produto'].tolist())
-            desc_sel = st.number_input("Novo Desconto (%)", 0, 100)
+            # 2. Abre a planilha pelo ID (aquele código gigante da URL)
+            sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
             
-            if st.button("Confirmar Desconto"):
-                # Acha a linha do produto (supondo que o produto esteja na coluna A/1)
-                cell = sh.find(prod_sel)
-                # Atualiza a coluna 7 (onde deve estar o desconto na sua planilha)
-                sh.update_cell(cell.row, 7, desc_sel)
-                st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
-                st.rerun() # Atualiza o site todo para mostrar o novo preço
-                
+            st.write("Conexão com a planilha estabelecida com sucesso!")
+            
+            # Seu formulário de desconto continua aqui...
+            
         except Exception as e:
-            st.error(f"Erro na conexão com a planilha: {e}")
+            st.error(f"Erro na conexão: {e}")
