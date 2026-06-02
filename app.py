@@ -67,39 +67,54 @@ with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
-if senha == "1234":
-            try:
-                # ... sua conexão ws = ...
-                
-                # --- BLOCO 1: APLICAR DESCONTO ---
-                st.write("---")
-                st.subheader("🏷️ Aplicar Desconto em Produto")
-                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
-                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
-                
-                if st.button("Confirmar Desconto"):
-                    cell = ws.find(prod_sel)
-                    ws.update_cell(cell.row, 7, desc_sel)
-                    st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
-                    st.rerun()
-
-                # --- BLOCO 2: REGISTRAR VENDA ---
-                st.write("---")
-                st.subheader("📉 Registrar Venda (Baixa de Estoque)")
-                prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
-                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
-                
-                if st.button("Registrar Venda"):
-                    cell = ws.find(prod_venda)
-                    estoque_atual = int(ws.cell(cell.row, 8).value)
-                    
-                    if estoque_atual >= qtd_venda:
-                        novo_estoque = estoque_atual - qtd_venda
-                        ws.update_cell(cell.row, 8, novo_estoque)
-                        st.success(f"Venda registrada! Estoque de {prod_venda} agora é {novo_estoque}.")
-                        st.rerun()
-                    else:
-                        st.error("Erro: Estoque insuficiente!")
+    if senha == "1234":
+        try:
+            # Conexão (já existente)
+            import gspread
+            from oauth2client.service_account import ServiceAccountCredentials
             
-            except Exception as e:
-                st.error(f"Erro na gestão: {e}")
+            secrets = st.secrets["gcp_service_account"]
+            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+            client = gspread.authorize(creds)
+            ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            # --- AGORA CRIAMOS A LISTA AQUI DENTRO ---
+            # Lemos a coluna 'Produto' da planilha para garantir que está sempre atualizada
+            dados_produtos = ws.get_all_records()
+            df_atualizado = pd.DataFrame(dados_produtos)
+            lista_produtos = df_atualizado['Produto'].tolist()
+            
+            # --- BLOCO 1: APLICAR DESCONTO ---
+            st.write("---")
+            st.subheader("🏷️ Aplicar Desconto em Produto")
+            prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
+            desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+            
+            if st.button("Confirmar Desconto"):
+                cell = ws.find(prod_sel)
+                ws.update_cell(cell.row, 7, desc_sel)
+                st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
+                st.rerun()
+
+            # --- BLOCO 2: REGISTRAR VENDA ---
+            st.write("---")
+            st.subheader("📉 Registrar Venda (Baixa de Estoque)")
+            prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
+            qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+            
+            if st.button("Registrar Venda"):
+                cell = ws.find(prod_venda)
+                # Garantindo que lemos da coluna 8 (estoque)
+                estoque_atual = int(ws.cell(cell.row, 8).value)
+                
+                if estoque_atual >= qtd_venda:
+                    novo_estoque = estoque_atual - qtd_venda
+                    ws.update_cell(cell.row, 8, novo_estoque)
+                    st.success(f"Venda registrada! Estoque de {prod_venda} agora é {novo_estoque}.")
+                    st.rerun()
+                else:
+                    st.error("Erro: Estoque insuficiente!")
+            
+        except Exception as e:
+            st.error(f"Erro na gestão: {e}")
