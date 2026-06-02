@@ -121,5 +121,5 @@ if senha == "1234":
                     # O segredo: isso força o site a recarregar e buscar os novos dados
                     st.rerun() 
                     
-            except Exception as e:
-                st.error(f"Erro ao aplicar desconto: {e}")
+                  except Exception as e:
+                  st.error(f"Erro ao aplicar desconto: {e}")
