@@ -45,8 +45,11 @@ for idx, row in df_f.iterrows():
     with st.container():
         c1, c2, c3 = st.columns([2, 1, 1])
         c1.markdown(f"### {row['Produto']} - {row['Marca']}")
-        c1.caption(f"{row['Descricao']}")
-        preco = row['Preco Venda']
+       # ONDE ESTÁ: 
+# c1.write(f"Preço: R$ {float(row['Preco Venda']):.2f}")
+
+# SUBSTITUA POR ISSO:
+preco = row['Preco Venda']
 if pd.isna(preco) or preco == "":
     preco_formatado = "Consultar"
 else:
