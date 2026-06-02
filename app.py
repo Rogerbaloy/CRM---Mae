@@ -1,50 +1,46 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
-# Configuração da Página
-st.set_page_config(page_title="CRM da Mãe", layout="wide")
+st.set_page_config(page_title="CRM Perfumaria", layout="wide")
+st.title("✨ CRM de Vendas - Perfumaria")
 
-st.title("✨ CRM da Mãe")
-
-# --- PARTE 1: CADASTRO DE CLIENTES ---
-st.subheader("Adicionar Novo Cliente")
-with st.form("cadastro_cliente"):
-    nome = st.text_input("Nome do Cliente")
-    tel = st.text_input("Telefone")
-    email = st.text_input("E-mail")
-    submit = st.form_submit_button("Salvar Cliente")
-    
-    if submit:
-        st.success(f"Cliente {nome} adicionado com sucesso!")
-
-# --- PARTE 2: CATÁLOGO DE PRODUTOS ---
-st.markdown("---")
-st.header("🛍️ Catálogo de Produtos")
-
-# Link da sua planilha de produtos (certifique-se que ela tenha: Produto, Marca, Categoria, Preço, Estoque)
+# 1. Carregar Dados (Planilha)
 sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=Sheet1"
+df = pd.read_csv(url)
 
-# Carregar dados do catálogo
-try:
-    df_produtos = pd.read_csv(url)
+# Cálculos
+df['Lucro'] = df['Preço Venda'] - df['Preço Pago']
+df['Margem'] = ((df['Lucro'] / df['Preço Venda']) * 100).round(1)
+
+# Abas do Sistema
+aba1, aba2, aba3 = st.tabs(["🛍️ Vendas", "📊 Dashboard", "👤 Clientes"])
+
+with aba1: # CATÁLOGO
+    st.header("Escolha os produtos")
+    genero = st.selectbox("Filtrar Gênero:", ["Todos", "Masculino", "Feminino"])
+    df_f = df if genero == "Todos" else df[df['Categoria'] == genero]
     
-    # Filtro de Gênero
-    genero = st.selectbox("Filtrar por gênero:", ["Todos", "Masculino", "Feminino"])
+    for idx, row in df_f.iterrows():
+        c1, c2, c3 = st.columns([2, 1, 1])
+        c1.write(f"**{row['Produto']}** ({row['Marca']})")
+        c2.write(f"R$ {row['Preço Venda']}")
+        if c3.button("Comprar", key=f"venda_{idx}"):
+            st.session_state.carrinho = row['Produto']
+            st.success(f"{row['Produto']} no carrinho!")
+
+with aba2: # DASHBOARD
+    st.header("Visão Financeira")
+    c1, c2 = st.columns(2)
+    c1.metric("Lucro Total Estimado", f"R$ {df['Lucro'].sum():.2f}")
+    c2.metric("Produtos em Estoque", df['Estoque'].sum())
     
-    if genero != "Todos":
-        df_exibicao = df_produtos[df_produtos['Categoria'] == genero]
-    else:
-        df_exibicao = df_produtos
+    fig = px.bar(df, x='Produto', y='Lucro', title="Lucro por Produto")
+    st.plotly_chart(fig, use_container_width=True)
 
-    # Exibição dos itens
-    for index, row in df_exibicao.iterrows():
-        col1, col2 = st.columns([3, 1])
-        col1.write(f"**{row['Produto']}** | Marca: {row['Marca']} | R$ {row['Preço']:.2f}")
-        col1.write(f"Estoque disponível: {row['Estoque']}")
-        
-        if col2.button("Comprar", key=f"btn_{index}"):
-            st.write(f"Você selecionou: {row['Produto']}")
-
-except Exception as e:
-    st.error("Erro ao carregar o catálogo. Verifique se a planilha tem as colunas corretas.")
+with aba3: # CADASTRO
+    with st.form("cadastro"):
+        nome = st.text_input("Nome do Cliente")
+        if st.form_submit_button("Salvar Cliente"):
+            st.success(f"Cliente {nome} salvo!")
