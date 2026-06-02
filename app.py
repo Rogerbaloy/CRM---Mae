@@ -64,7 +64,34 @@ with aba2:
         if st.form_submit_button("Cadastrar"): st.success("Cliente salvo!")
 
 with aba3:
-    st.subheader("🔐 Gestão e Descontos")
-    senha = st.text_input("Senha", type="password")
+    st.subheader("🔐 Painel Exclusivo da Mi")
+    senha = st.text_input("Senha", type="password", key="senha_admin")
+    
     if senha == "1234":
-        st.write("Para aplicar desconto, altere a coluna 'Desconto' na sua planilha 'Produtos' e recarregue a página.")
+        # Conexão com a Planilha via API (usando os Secrets)
+        try:
+            import gspread
+            from oauth2client.service_account import ServiceAccountCredentials
+            
+            def get_sheet():
+                creds_dict = st.secrets["gcp_service_account"]
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'])
+                client = gspread.authorize(creds)
+                return client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            sh = get_sheet()
+            
+            st.write("### 🏷️ Aplicar Desconto em Produto")
+            prod_sel = st.selectbox("Escolher perfume:", df_prod['Produto'].tolist())
+            desc_sel = st.number_input("Novo Desconto (%)", 0, 100)
+            
+            if st.button("Confirmar Desconto"):
+                # Acha a linha do produto (supondo que o produto esteja na coluna A/1)
+                cell = sh.find(prod_sel)
+                # Atualiza a coluna 7 (onde deve estar o desconto na sua planilha)
+                sh.update_cell(cell.row, 7, desc_sel)
+                st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
+                st.rerun() # Atualiza o site todo para mostrar o novo preço
+                
+        except Exception as e:
+            st.error(f"Erro na conexão com a planilha: {e}")
