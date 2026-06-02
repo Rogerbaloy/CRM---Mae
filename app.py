@@ -2,64 +2,53 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="CRM Perfumaria", layout="wide")
-st.title("✨ CRM de Vendas - Perfumaria")
+# Layout Estilo Perfumaria
+st.set_page_config(page_title="Loja de Perfumes", layout="wide")
+st.markdown("""
+    <style>
+    .main {background-color: #fdf6f7;}
+    .stButton>button {width: 100%; border-radius: 20px; background-color: #d4af37; color: white;}
+    .produto-card {padding: 15px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; background: white;}
+    </style>
+""", unsafe_allow_html=True)
 
-# 1. Carregar Dados
+st.title("✨ Boutique de Perfumes")
+
+# Carregar Dados
 sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=Sheet1"
+df = pd.read_csv(url)
+df.columns = df.columns.str.strip()
 
-@st.cache_data(ttl=60)
-def carregar_dados():
-    df = pd.read_csv(url)
-    df.columns = df.columns.str.strip()
-    
-    # FORÇAR DADOS A SEREM NÚMEROS (Remove o erro de TypeError)
-    for col in ['Preço Venda', 'Preço Pago']:
-        if col in df.columns:
-            # Remove "R$", espaços, e converte para número
-            df[col] = df[col].astype(str).str.replace('R$', '', regex=False).str.replace(',', '.', regex=False)
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-    
-    return df
-
-df = carregar_dados()
-
-# 2. Cálculos (Agora vai funcionar!)
-df['Lucro'] = df['Preço Venda'] - df['Preço Pago']
-
-# 3. Inicializar carrinho
-if 'carrinho' not in st.session_state:
-    st.session_state.carrinho = None
-
-# 4. Abas
-aba1, aba2, aba3 = st.tabs(["🛍️ Vendas", "📊 Dashboard", "👤 Clientes"])
+# Abas
+aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "📊 Financeiro", "👤 Clientes"])
 
 with aba1:
-    st.header("Escolha os produtos")
-    genero = st.selectbox("Filtrar Gênero:", ["Todos", "Masculino", "Feminino"])
+    genero = st.selectbox("Filtrar por:", ["Todos", "Masculino", "Feminino"])
     df_f = df if genero == "Todos" else df[df['Categoria'] == genero]
     
     for idx, row in df_f.iterrows():
-        c1, c2, c3 = st.columns([3, 1, 1])
-        c1.write(f"**{row['Produto']}** | Preço: R$ {row['Preço Venda']}")
-        if c3.button("Comprar", key=f"venda_{idx}"):
-            st.session_state.carrinho = row['Produto']
-            st.rerun()
+        with st.container():
+            st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+            c1, c2, c3, c4 = st.columns([3, 1, 1, 1])
+            c1.write(f"**{row['Produto']}**")
+            c2.write(f"R$ {row['Preço Venda']:.2f}")
+            qtd = c3.number_input("Qtd", 1, int(row['Estoque']), key=f"qtd_{idx}")
             
-    if st.session_state.carrinho:
-        st.success(f"Item no carrinho: {st.session_state.carrinho}")
-        msg = f"Olá, quero comprar o perfume {st.session_state.carrinho}"
-        st.link_button("Enviar Pedido no Zap", f"https://wa.me/5551993144399?text={msg.replace(' ', '%20')}")
-
-with aba2:
-    st.header("Visão Financeira")
-    st.metric("Lucro Total", f"R$ {df['Lucro'].sum():.2f}")
-    fig = px.bar(df, x='Produto', y='Lucro', title="Lucro por Produto")
-    st.plotly_chart(fig)
+            if qtd >= 2:
+                preco_final = (row['Preço Venda'] * qtd) * 0.95
+                c2.write(f"🏷️ -5%: R$ {preco_final:.2f}")
+            
+            if c4.button("🛒 Comprar", key=f"btn_{idx}"):
+                msg = f"Olá! Quero comprar {qtd}x {row['Produto']}. Obrigado pela compra, volte sempre!"
+                st.link_button("Finalizar no Zap", f"https://wa.me/5551993144399?text={msg.replace(' ', '%20')}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
 with aba3:
+    st.header("Cadastro de Cliente")
     with st.form("cadastro"):
-        nome = st.text_input("Nome do Cliente")
-        if st.form_submit_button("Salvar"):
-            st.success(f"Cliente {nome} salvo!")
+        nome = st.text_input("Nome Completo")
+        cpf = st.text_input("CPF")
+        cel = st.text_input("Número (WhatsApp)")
+        if st.form_submit_button("Cadastrar"):
+            st.success(f"Cliente {nome} cadastrado!")
