@@ -33,25 +33,44 @@ st.markdown("""<div class="header-box"><h1 class="brand-title">✨ Perfumaria e 
 # ABAS
 aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
 
-with c1:
+with aba1:
+    filtro = st.selectbox("Filtrar por Categoria:", ["Todos", "Masculino", "Feminino", "Infantil", "Outros"])
+    df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
+    
+    if 'carrinho' not in st.session_state:
+        st.session_state.carrinho = []
+
+    # Loop pelos produtos
+    for idx, row in df_f.iterrows():
+        # Verifica se o produto tem nome, senão pula
+        if pd.isna(row['Produto']): continue
+        
+        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+        
+        # DEFINIMOS AS COLUNAS AQUI (Isto define c1 e c2)
+        c1, c2 = st.columns([3, 1])
+        
+        with c1:
             codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else 0
             st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
-            
-            # --- BLINDAGEM DE ESTOQUE ---
-            estoque_raw = row['Estoque']
-            estoque_val = int(estoque_raw) if pd.notna(estoque_raw) and str(estoque_raw).replace('.','',1).isdigit() else 0
+            # Estoque seguro
+            estoque_val = int(row['Estoque']) if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {estoque_val}")
             
-with c2:
-            # --- BLINDAGEM DE PREÇO ---
-            preco_raw = row['Preco Venda']
-            preco_base = float(preco_raw) if pd.notna(preco_raw) and str(preco_raw).replace('.','',1).isdigit() else 0.0
+        with c2:
+            # Preço seguro
+            try:
+                preco_base = float(row['Preco Venda'])
+            except:
+                preco_base = 0.0
             
-            # Desconto
-            desc_raw = row['Desconto']
-            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
-            
+            # Desconto seguro
+            try:
+                desc = float(row['Desconto'])
+            except:
+                desc = 0.0
+                
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
@@ -60,30 +79,29 @@ with c2:
             else:
                 st.write(f"### R$ {preco_base:.2f}")
                 
-            # Estoque seguro
-            estoque_limite = int(to_float(row['Estoque']))
-            qtd = st.number_input("Qtd", 1, max(1, estoque_limite), key=f"q_{idx}")
+            # Quantidade
+            qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
             
-            if st.button("🛒 Adicionar ao Carrinho", key=f"btn_{idx}"):
+            if st.button("🛒 Adicionar", key=f"btn_{idx}"):
                 item = f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})"
                 st.session_state.carrinho.append(item)
-                st.success(f"{row['Produto']} adicionado!")
+                st.success("Adicionado!")
         
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- O CARRINHO TAMBÉM DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
-            if st.session_state.carrinho:
-                st.write("---")
-                st.subheader("🛒 Seu Carrinho")
-            for item in st.session_state.carrinho:
-                st.write(f"- {item}")
+    # Resumo do Carrinho
+    if st.session_state.carrinho:
+        st.write("---")
+        st.subheader("🛒 Seu Carrinho")
+        for item in st.session_state.carrinho:
+            st.write(f"- {item}")
         
-                msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
-                st.link_button("Finalizar Pedido via WhatsApp", f"https://wa.me/5551997812374?text={msg}")
+        msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
+        st.link_button("Finalizar no WhatsApp", f"https://wa.me/5551997812374?text={msg}")
         
-            if st.button("Limpar Carrinho"):
-                st.session_state.carrinho = []
-                st.rerun()
+        if st.button("Limpar Carrinho"):
+            st.session_state.carrinho = []
+            st.rerun()
 with aba2:
     st.subheader("Cadastro de Clientes")
     with st.form("c"):
