@@ -55,13 +55,20 @@ with aba1:
             st.write(f"**Estoque:** {int(estoque_val)}")
             
         # No loop do catálogo (Aba 1), substitua o cálculo por este:
+        
         with c2:
-            preco_base = float(row['Preco Venda']) if pd.notna(row['Preco Venda']) else 0.0
-    
-        # O código agora busca explicitamente a coluna "Desconto" da planilha
-            desc_raw = row['Desconto']
-            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
-    
+            # Função para converter qualquer coisa para número com segurança
+            def to_float(value):
+                try:
+                    # Remove espaços e converte para string antes de tentar o float
+                    clean_val = str(value).replace(',', '.').strip()
+                    return float(clean_val)
+                except:
+                    return 0.0
+
+            preco_base = to_float(row['Preco Venda'])
+            desc = to_float(row['Desconto'])
+            
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
@@ -71,7 +78,8 @@ with aba1:
             else:
                 st.write(f"### R$ {preco_final:.2f}")
                 
-            estoque_limite = int(row['Estoque']) if pd.notna(row['Estoque']) else 0
+            # Estoque seguro
+            estoque_limite = int(to_float(row['Estoque']))
             qtd = st.number_input("Qtd", 1, max(1, estoque_limite), key=f"q_{idx}")
             
             if st.button("🛒 Adicionar ao Carrinho", key=f"btn_{idx}"):
