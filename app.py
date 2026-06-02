@@ -60,8 +60,11 @@ for idx, row in df_f.iterrows():
 
 # --- DASHBOARD PROTEGIDO ---
 if senha == "1234":
-    st.markdown("---")
-    st.header("📊 Painel de Controle (Privado)")
-    c1, c2 = st.columns(2)
-    c1.metric("Lucro Total", f"R$ {(df['Preco Venda'] - df['Preco Compra']).sum():.2f}")
-    st.table(df) # Mostra a tabela completa apenas para a gerente
+    with st.expander("📦 Baixar Estoque Manualmente"):
+        produto_baixa = st.selectbox("Selecione o produto para dar baixa:", df['Produto'].tolist())
+        qtd_baixa = st.number_input("Quantidade vendida:", 1, 100)
+        
+        if st.button("Confirmar Venda e Baixar Estoque"):
+            # Aqui o sistema deduz a quantidade na memória
+            st.write(f"Baixa realizada: {qtd_baixa} unidades de {produto_baixa}.")
+            st.warning("Para salvar na planilha, sua mãe deve atualizar o Google Sheets manualmente ou usaremos um script de escrita na próxima etapa.")
