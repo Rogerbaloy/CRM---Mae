@@ -1,21 +1,16 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+# ... logo abaixo de df = pd.read_csv(url) ...
 
-st.set_page_config(page_title="CRM Perfumaria", layout="wide")
-st.title("✨ CRM de Vendas - Perfumaria")
+df.columns = df.columns.str.strip() # Remove espaços invisíveis das colunas
 
-# 1. Carregar Dados
-sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
-url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=Sheet1"
+# VERIFICAÇÃO DE SEGURANÇA
+colunas_necessarias = ['Produto', 'Preço Venda', 'Preço Pago']
+for col in colunas_necessarias:
+    if col not in df.columns:
+        st.error(f"ERRO: A coluna '{col}' não foi encontrada na sua planilha!")
+        st.write("Colunas encontradas:", df.columns.tolist())
+        st.stop() # Para o site aqui para você ler o erro
 
-@st.cache_data(ttl=60) # Atualiza a cada 60 segundos
-def carregar_dados():
-    df = pd.read_csv(url)
-    df.columns = df.columns.str.strip()
-    return df
-
-df = carregar_dados()
+# Agora sim faz o cálculo
 df['Lucro'] = df['Preço Venda'] - df['Preço Pago']
 
 # Inicializar carrinho se não existir
