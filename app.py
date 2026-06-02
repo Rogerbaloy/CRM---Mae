@@ -14,10 +14,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # CARGA DE DADOS
+# No topo do seu código (na função load_data):
 def load_data(sheet):
     try:
         url = f"https://docs.google.com/spreadsheets/d/1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0/gviz/tq?tqx=out:csv&sheet={sheet}"
-        return pd.read_csv(url)
+        df = pd.read_csv(url)
+        # LIMPEZA: Remove linhas onde o nome do produto ou categoria esteja vazio
+        df = df.dropna(subset=['Produto', 'Categoria']) 
+        return df
     except: return pd.DataFrame()
 
 df_prod = load_data("Produtos")
@@ -37,18 +41,20 @@ with aba1:
     if 'carrinho' not in st.session_state:
         st.session_state.carrinho = []
 
-    for idx, row in df_f.iterrows():
-        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-        c1, c2 = st.columns([3, 1])
-        with c1:
-           # Substitua a linha do subheader (linha 44) por este bloco:
-            codigo_raw = row['Codigo']
-            # Se for um número válido, usamos; senão, deixamos vazio ou 0
-            codigo_display = int(codigo_raw) if pd.notna(codigo_raw) and str(codigo_raw).isdigit() else "S/C"
-            st.subheader(f"{row['Marca']} - cod {codigo_display} {row['Produto']}")
-            st.write(f"**Descrição:** {row['Descricao']}")
-            estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
-            st.write(f"**Estoque:** {int(estoque_val)}")
+    # Substitua seu loop atual por este formato garantido:
+for idx, row in df_f.iterrows():
+    # Só processa se o produto existir
+    if pd.isna(row['Produto']): continue
+    
+       st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+       c1, c2 = st.columns([3, 1])
+       with c1:
+        # Título limpo: Marca - Codigo - Nome
+        codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else "0"
+        st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
+        st.write(f"**Descrição:** {row['Descricao']}")
+        st.write(f"**Estoque:** {int(row['Estoque']) if pd.notna(row['Estoque']) else 0}")
+        
         with c2:
             # Pega o valor e limpa se for vazio ou texto estranho
             p_val = row['Preco Venda']
@@ -123,9 +129,12 @@ with aba3:
             client = gspread.authorize(creds)
             ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
             
-            dados_produtos = ws.get_all_records()
-            df_atualizado = pd.DataFrame(dados_produtos)
-            lista_produtos = df_atualizado['Produto'].tolist()
+           # E na sua Aba 3 (Gestão), onde você lê os dados para o cadastro:
+           dados_produtos = ws.get_all_records()
+           df_atualizado = pd.DataFrame(dados_produtos)
+           # Filtra para remover linhas vazias antes de criar a lista de produtos
+           df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
+           lista_produtos = df_atualizado['Produto'].tolist()
             
             # --- BLOCO 1: APLICAR DESCONTO ---
             with st.expander("🏷️ Aplicar Desconto em Produto"):
