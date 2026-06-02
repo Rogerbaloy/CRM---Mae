@@ -43,7 +43,7 @@ with c1:
             estoque_val = int(estoque_raw) if pd.notna(estoque_raw) and str(estoque_raw).replace('.','',1).isdigit() else 0
             st.write(f"**Estoque:** {estoque_val}")
             
-        with c2:
+with c2:
             # --- BLINDAGEM DE PREÇO ---
             preco_raw = row['Preco Venda']
             preco_base = float(preco_raw) if pd.notna(preco_raw) and str(preco_raw).replace('.','',1).isdigit() else 0.0
