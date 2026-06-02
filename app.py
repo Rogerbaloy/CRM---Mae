@@ -125,15 +125,20 @@ with aba3:
             lista_produtos = df_atualizado['Produto'].tolist()
             
             # --- BLOCO 1: APLICAR DESCONTO ---
-            with st.expander("🏷️ Aplicar Desconto em Produto"):
-                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
-                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
-                
-                if st.button("Confirmar Desconto"):
-                    cell = ws.find(prod_sel)
-                    ws.update_cell(cell.row, 7, desc_sel)
-                    st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
-                    st.rerun()
+           # Exemplo no Bloco de Desconto:
+        with st.expander("🏷️ Aplicar Desconto em Produto"):
+            selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
+            # Extrai o código do texto "Cod 1 - ..."
+            cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
+            
+            desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+            
+            if st.button("Confirmar Desconto"):
+                # Busca pela coluna 1 (Código)
+                cell = ws.find(str(cod_extraido), in_column=1)
+                ws.update_cell(cell.row, 7, desc_sel)
+                st.success("Desconto aplicado!")
+                st.rerun()
 
             # --- BLOCO 2: REGISTRAR VENDA ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
