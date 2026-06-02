@@ -69,7 +69,7 @@ with c2:
                 st.session_state.carrinho.append(item)
                 st.success(f"{row['Produto']} adicionado!")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # --- O CARRINHO TAMBÉM DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
     if st.session_state.carrinho:
