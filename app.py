@@ -140,7 +140,7 @@ with aba3:
            # --- BLOCO 4: CADASTRAR NOVO PRODUTO ---
             st.write("---")
             with st.expander("➕ Cadastro de Novo Produto"): # <--- ADICIONE O : AQUI
-            with st.form("form_cadastro"):
+              with st.form("form_cadastro"):
                 cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
                 nome_prod = st.text_input("Nome/Descrição do Produto:")
                 marca = st.text_input("Marca:")
