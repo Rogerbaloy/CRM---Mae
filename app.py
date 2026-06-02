@@ -118,3 +118,17 @@ with aba3:
             
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
+            # --- BLOCO 3: REPOSIÇÃO DE ESTOQUE ---
+            st.write("---")
+            st.subheader("➕ Repor Estoque")
+            prod_repo = st.selectbox("Escolher perfume:", lista_produtos, key="repo_prod")
+            qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
+            
+            if st.button("Confirmar Reposição"):
+                cell = ws.find(prod_repo)
+                estoque_atual = int(ws.cell(cell.row, 8).value)
+                novo_estoque = estoque_atual + qtd_repo
+                
+                ws.update_cell(cell.row, 8, novo_estoque)
+                st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
+                st.rerun()
