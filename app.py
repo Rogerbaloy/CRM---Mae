@@ -43,7 +43,6 @@ st.write("")
 
 for idx, row in df_f.iterrows():
     with st.container():
-        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
         c1, c2, c3 = st.columns([2, 1, 1])
         c1.markdown(f"### {row['Produto']} - {row['Marca']}")
         c1.caption(f"{row['Descricao']}")
