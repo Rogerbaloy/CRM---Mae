@@ -73,9 +73,9 @@ with c2:
 
     # --- O CARRINHO TAMBÉM DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
             if st.session_state.carrinho:
-        st.write("---")
-        st.subheader("🛒 Seu Carrinho")
-        for item in st.session_state.carrinho:
+            st.write("---")
+            st.subheader("🛒 Seu Carrinho")
+            for item in st.session_state.carrinho:
             st.write(f"- {item}")
         
         msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
