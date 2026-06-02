@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
-st.set_page_config(page_title="CRM Boutique", layout="wide")
+st.set_page_config(page_title="Boutique de Perfumes", layout="wide")
+
+# --- ESTILO BOUTIQUE (CSS) ---
+st.markdown("""
+    <style>
+    .stApp {background-color: #fdf0f5;}
+    .produto-card {background: #ffffff; padding: 20px; border-radius: 15px; border: 1px solid #d4af37; margin-bottom: 20px; box-shadow: 2px 2px 10px #fce4ec;}
+    h1, h2, h3 {color: #a0522d;}
+    .stButton>button {background-color: #d4af37; color: white; border-radius: 5px;}
+    </style>
+""", unsafe_allow_html=True)
 
 # --- CARREGAR DADOS ---
-# Certifique-se de que sua planilha tenha as abas "Produtos", "Vendas" e "Clientes"
+# Certifique-se de que sua planilha tenha as colunas: Produto, Marca, Descricao, Categoria, Preco Venda, Estoque
 sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
 def load_data(sheet_name):
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
@@ -13,42 +22,46 @@ def load_data(sheet_name):
 
 df_prod = load_data("Produtos")
 df_vendas = load_data("Vendas")
-df_clientes = load_data("Clientes")
 
-# --- INTERFACE ---
-aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
-
-with aba1:
-    st.title("🛍️ Catálogo")
-    for idx, row in df_prod.iterrows():
-        st.markdown(f"**{row['Produto']}** | R$ {row['Preco Venda']}")
-        if st.button("Comprar", key=f"c_{idx}"):
-            st.link_button("Finalizar no Zap", f"https://wa.me/5551993144399?text=Quero {row['Produto']}")
-
-with aba2:
-    st.title("👤 Área do Cliente")
-    cpf = st.text_input("Digite seu CPF para ver suas compras:")
-    if cpf:
-        compras = df_vendas[df_vendas['CPF'] == cpf]
-        st.table(compras)
+# --- SIDEBAR (CPF E GESTÃO) ---
+with st.sidebar:
+    st.markdown("### 👤 Área da Cliente")
+    cpf_consulta = st.text_input("Digite seu CPF:")
+    if cpf_consulta and not df_vendas.empty:
+        historico = df_vendas[df_vendas['CPF'].astype(str) == cpf_consulta]
+        st.dataframe(historico)
     
-    with st.form("cadastro"):
-        st.subheader("Novo Cadastro")
-        nome = st.text_input("Nome")
-        cpf_novo = st.text_input("CPF")
-        if st.form_submit_button("Cadastrar"):
-            st.success("Cadastro salvo!")
+    st.markdown("---")
+    st.markdown("### 🔐 Gestão da Mãe")
+    senha = st.text_input("Senha Admin", type="password")
 
-with aba3:
-    st.title("🔐 Painel da Gerente")
-    senha = st.text_input("Senha", type="password")
-    if senha == "1234":
-        st.subheader("📊 Dashboard de Vendas")
-        st.metric("Lucro Total", f"R$ {(df_vendas['Lucro']).sum():.2f}")
+# --- CATÁLOGO ---
+st.title("✨ Boutique de Perfumes")
+
+# Filtro por Categoria
+categorias = ["Todos"] + list(df_prod['Categoria'].unique())
+filtro = st.selectbox("Filtrar por Categoria:", categorias)
+df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
+
+for idx, row in df_f.iterrows():
+    st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+    c1, c2 = st.columns([3, 1])
+    
+    with c1:
+        st.subheader(f"{row['Produto']} - {row['Marca']}")
+        st.write(f"**Descrição:** {row['Descricao']}")
+        st.write(f"**Estoque:** {int(row['Estoque'])} unidades")
         
-        # Gráfico de Margem
-        fig = px.bar(df_vendas, x='Produto', y='Lucro', color='Produto', title="Margem por Produto")
-        st.plotly_chart(fig)
-        
-        st.subheader("Registro de Vendas")
-        st.table(df_vendas)
+    with c2:
+        st.write(f"### R$ {float(row['Preco Venda']):.2f}")
+        if st.button("🛒 Comprar", key=f"btn_{idx}"):
+            msg = f"Olá! Quero comprar o perfume {row['Produto']}"
+            st.link_button("Finalizar no Zap", f"https://wa.me/5551993144399?text={msg.replace(' ', '%20')}")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- DASHBOARD (PROTEGIDO) ---
+if senha == "1234":
+    st.markdown("---")
+    st.header("📊 Painel de Vendas")
+    st.table(df_vendas)
