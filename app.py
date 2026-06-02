@@ -46,7 +46,7 @@ for idx, row in df_f.iterrows():
         c1, c2, c3 = st.columns([2, 1, 1])
         c1.markdown(f"### {row['Produto']} - {row['Marca']}")
        # ONDE ESTÁ: 
-# c1.write(f"Preço: R$ {float(row['Preco Venda']):.2f}")
+# c2.write(f"Preço: R$ {float(row['Preco Venda']):.2f}")
 
 # SUBSTITUA POR ISSO:
 preco = row['Preco Venda']
@@ -55,7 +55,7 @@ if pd.isna(preco) or preco == "":
 else:
     preco_formatado = f"R$ {float(preco):.2f}"
 
-c1.write(f"**Preço:** {preco_formatado}")
+c2.write(f"**Preço:** {preco_formatado}")
         
         # Quantidade menor
         qtd = c3.number_input("Qtd", 1, int(row['Estoque']), key=f"q{idx}", label_visibility="collapsed")
