@@ -28,6 +28,7 @@ st.markdown("""<div class="header-box"><h1 class="brand-title">✨ Perfumaria e 
 
 # ABAS
 aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
+
 with aba1:
     filtro = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df_prod['Categoria'].unique()))
     df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
@@ -45,9 +46,12 @@ with aba1:
             estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {int(estoque_val)}")
         with c2:
-            preco_base = float(row['Preco Venda'])
-            desc_raw = row['Desconto']
-            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
+            # Pega o valor e limpa se for vazio ou texto estranho
+            p_val = row['Preco Venda']
+            preco_base = float(p_val) if pd.notna(p_val) and str(p_val).replace('.','',1).replace(',','').isdigit() else 0.0
+            
+            d_val = row['Desconto']
+            desc = float(d_val) if pd.notna(d_val) and str(d_val).replace('.','',1).replace(',','').isdigit() else 0.0
             
             preco_final = preco_base * (1 - desc/100)
             
@@ -147,7 +151,7 @@ with aba3:
                     st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
                     st.rerun()
 
-            # --- BLOCO 4: CADASTRO ---
+          # --- BLOCO 4: CADASTRO ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
@@ -157,12 +161,30 @@ with aba3:
                     estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
                     
                     if st.form_submit_button("Cadastrar Produto"):
-                        codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
-                        novo_codigo = max(codigos) + 1 if codigos else 1
-                        nova_linha = [novo_codigo, cat, nome_prod, marca, nome_prod, preco, 0, estoque_ini]
-                        ws.append_row(nova_linha)
-                        st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
-                        st.rerun()
+                        # Verifica se os campos obrigatórios foram preenchidos
+                        if nome_prod and marca:
+                            codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
+                            novo_codigo = max(codigos) + 1 if codigos else 1
+                            
+                            # Prepara a linha
+                            nova_linha = [
+                                int(novo_codigo), 
+                                str(cat), 
+                                str(nome_prod), 
+                                str(marca), 
+                                str(nome_prod), 
+                                float(preco), 
+                                0.0, 
+                                int(estoque_ini)
+                            ]
+                            
+                            # Adiciona apenas UMA vez
+                            ws.append_row(nova_linha)
+                            
+                            st.success(f"Produto {nome_prod} cadastrado com sucesso! (Código: {novo_codigo})")
+                            st.rerun()
+                        else:
+                            st.error("Por favor, preencha o Nome e a Marca!")
             
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
