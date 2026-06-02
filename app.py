@@ -41,7 +41,11 @@ with aba1:
         st.markdown('<div class="produto-card">', unsafe_allow_html=True)
         c1, c2 = st.columns([3, 1])
         with c1:
-            st.subheader(f"{row['Marca']} - cod {int(row['Codigo'])} {row['Produto']}")
+           # Substitua a linha do subheader (linha 44) por este bloco:
+            codigo_raw = row['Codigo']
+            # Se for um número válido, usamos; senão, deixamos vazio ou 0
+            codigo_display = int(codigo_raw) if pd.notna(codigo_raw) and str(codigo_raw).isdigit() else "S/C"
+            st.subheader(f"{row['Marca']} - cod {codigo_display} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
             estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {int(estoque_val)}")
