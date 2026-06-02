@@ -68,29 +68,58 @@ with aba3:
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
 if senha == "1234":
+    st.write("---")
+                st.subheader("📉 Registrar Venda (Baixa de Estoque)")
+                
+                # Seleciona o produto e a quantidade vendida
+                prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
+                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+                
+                if st.button("Registrar Venda"):
+                    # Encontra a célula do produto
+                    cell = ws.find(prod_venda)
+                    
+                    # Lê o estoque atual (Coluna H na sua planilha, que é a 8ª coluna)
+                    estoque_atual = int(ws.cell(cell.row, 8).value)
+                    
+                    if estoque_atual >= qtd_venda:
+                        # Faz a subtração
+                        novo_estoque = estoque_atual - qtd_venda
+                        
+                        # Atualiza a planilha
+                        ws.update_cell(cell.row, 8, novo_estoque)
+                        
+                        # (Opcional) Poderíamos aqui adicionar uma linha na aba 'Vendas' 
+                        # com data, cliente e valor, se você quiser um histórico.
+                        
+                        st.success(f"Venda registrada! Estoque de {prod_venda} atualizado para {novo_estoque}.")
+                        st.rerun()
+                    else:
+                        st.error("Erro: Estoque insuficiente!")
             try:
-                import gspread
-                from oauth2client.service_account import ServiceAccountCredentials
+                # ... (sua parte de conexão que já está funcionando)
                 
-                # Certifique-se de que o Secrets está sendo carregado corretamente
-                secrets = st.secrets["gcp_service_account"]
+                st.write("---")
+                st.subheader("🏷️ Aplicar Desconto em Produto")
                 
-                # Definimos os escopos exatos para Planilhas e Drive
-                scope = [
-                    'https://www.googleapis.com/auth/spreadsheets',
-                    'https://www.googleapis.com/auth/drive'
-                ]
+                # Cria o seletor com a lista de produtos que vem da planilha
+                lista_produtos = df_prod['Produto'].tolist()
+                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos)
                 
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
-                client = gspread.authorize(creds)
+                # Campo para ela digitar o desconto
+                desc_sel = st.number_input("Novo Desconto (%)", 0, 100)
                 
-                # Tenta abrir a planilha pelo ID
-                sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0")
-                ws = sh.worksheet("Produtos")
-                
-                st.success("Conexão estabelecida com sucesso!")
-                
-                # Agora você pode usar 'ws' para ler ou escrever
-                
+                if st.button("Confirmar Desconto"):
+                    # Busca a linha do produto selecionado na planilha
+                    cell = ws.find(prod_sel)
+                    
+                    # Atualiza a coluna 7 (Coluna G: Desconto) com o novo valor
+                    ws.update_cell(cell.row, 7, desc_sel)
+                    
+                    st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel} com sucesso!")
+                    
+                    # O segredo: isso força o site a recarregar e buscar os novos dados
+                    st.rerun() 
+                    
             except Exception as e:
-                st.error(f"Erro na conexão: {e}")
+                st.error(f"Erro ao aplicar desconto: {e}")
