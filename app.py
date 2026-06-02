@@ -117,93 +117,68 @@ with aba3:
             client = gspread.authorize(creds)
             ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
             
-            # E na sua Aba 3 (Gestão), onde você lê os dados para o cadastro:
             dados_produtos = ws.get_all_records()
             df_atualizado = pd.DataFrame(dados_produtos)
-            # Filtra para remover linhas vazias antes de criar a lista de produtos
             df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
-            lista_produtos = df_atualizado['Produto'].tolist()
+            
+            # CRIAMOS A LISTA FORMATADA: "Cod X - Nome"
+            lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
             
             # --- BLOCO 1: APLICAR DESCONTO ---
-            # Exemplo no Bloco de Desconto:
             with st.expander("🏷️ Aplicar Desconto em Produto"):
-             selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
-            # Extrai o código do texto "Cod 1 - ..."
-            cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
-            
-            desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
-            
-            if st.button("Confirmar Desconto"):
-                # Busca pela coluna 1 (Código)
-                cell = ws.find(str(cod_extraido), in_column=1)
-                ws.update_cell(cell.row, 7, desc_sel)
-                st.success("Desconto aplicado!")
-                st.rerun()
+                selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
+                cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
+                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+                
+                if st.button("Confirmar Desconto"):
+                    cell = ws.find(str(cod_extraido), in_column=1) # Busca na coluna 1 (Código)
+                    ws.update_cell(cell.row, 7, desc_sel)
+                    st.success(f"Desconto aplicado ao produto {selecionado}!")
+                    st.rerun()
 
             # --- BLOCO 2: REGISTRAR VENDA ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
-                prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
+                prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+                cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
                 qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
                 if st.button("Registrar Venda"):
-                    cell = ws.find(prod_venda)
+                    cell = ws.find(str(cod_venda), in_column=1)
                     estoque_atual = int(ws.cell(cell.row, 8).value)
-                    
                     if estoque_atual >= qtd_venda:
-                        novo_estoque = estoque_atual - qtd_venda
-                        ws.update_cell(cell.row, 8, novo_estoque)
-                        st.success(f"Venda registrada! Estoque de {prod_venda} agora é {novo_estoque}.")
+                        ws.update_cell(cell.row, 8, estoque_atual - qtd_venda)
+                        st.success("Venda registrada!")
                         st.rerun()
                     else:
-                        st.error("Erro: Estoque insuficiente!")
-                    
+                        st.error("Estoque insuficiente!")
+
             # --- BLOCO 3: REPOSIÇÃO ---
             with st.expander("➕ Repor Estoque"):
-                prod_repo = st.selectbox("Escolher perfume:", lista_produtos, key="repo_prod")
+                prod_repo = st.selectbox("Escolher perfume:", lista_formatada, key="repo_prod")
+                cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
                 qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
                 
                 if st.button("Confirmar Reposição"):
-                    cell = ws.find(prod_repo)
+                    cell = ws.find(str(cod_repo), in_column=1)
                     estoque_atual = int(ws.cell(cell.row, 8).value)
-                    novo_estoque = estoque_atual + qtd_repo
-                    ws.update_cell(cell.row, 8, novo_estoque)
-                    st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
+                    ws.update_cell(cell.row, 8, estoque_atual + qtd_repo)
+                    st.success("Reposição feita!")
                     st.rerun()
 
-          # --- BLOCO 4: CADASTRO ---
+            # --- BLOCO 4: CADASTRO ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
-                    nome_prod = st.text_input("Nome/Descrição do Produto:")
+                    nome_prod = st.text_input("Nome:")
                     marca = st.text_input("Marca:")
-                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                    preco = st.number_input("Preço:", 0.0, 1000.0)
                     estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
                     
                     if st.form_submit_button("Cadastrar Produto"):
-                        # Verifica se os campos obrigatórios foram preenchidos
-                        if nome_prod and marca:
-                            codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
-                            novo_codigo = max(codigos) + 1 if codigos else 1
-                            
-                            # Prepara a linha
-                            nova_linha = [
-                                int(novo_codigo), 
-                                str(cat), 
-                                str(nome_prod), 
-                                str(marca), 
-                                str(nome_prod), 
-                                float(preco), 
-                                0.0, 
-                                int(estoque_ini)
-                            ]
-                            
-                            # Adiciona apenas UMA vez
-                            ws.append_row(nova_linha)
-                            
-                            st.success(f"Produto {nome_prod} cadastrado com sucesso! (Código: {novo_codigo})")
-                            st.rerun()
-                        else:
-                            st.error("Por favor, preencha o Nome e a Marca!")
-            
+                        codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
+                        novo_codigo = max(codigos) + 1 if codigos else 1
+                        ws.append_row([novo_codigo, cat, nome_prod, marca, nome_prod, preco, 0, estoque_ini])
+                        st.success("Cadastrado!")
+                        st.rerun()
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
