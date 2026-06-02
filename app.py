@@ -54,14 +54,14 @@ with aba1:
             estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {int(estoque_val)}")
             
+        # No loop do catálogo (Aba 1), substitua o cálculo por este:
         with c2:
-            try:
-                preco_base = float(row['Preco Venda'])
-                desc = float(row['Desconto']) if pd.notna(row['Desconto']) else 0.0
-            except:
-                preco_base = 0.0
-                desc = 0.0
-            
+            preco_base = float(row['Preco Venda']) if pd.notna(row['Preco Venda']) else 0.0
+    
+        # O código agora busca explicitamente a coluna "Desconto" da planilha
+            desc_raw = row['Desconto']
+            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
+    
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
