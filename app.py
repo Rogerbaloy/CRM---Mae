@@ -37,14 +37,15 @@ with aba1:
         st.markdown('<div class="produto-card">', unsafe_allow_html=True)
         c1, c2 = st.columns([3, 1])
         with c1:
-            st.subheader(f"🌸 {row['Produto']} - {row['Marca']}")
+            st.subheader(f"{row['Marca']} - cod {int(row['Codigo'])} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
             # Tenta converter para número, se falhar ou estiver vazio, mostra 0
             estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {int(estoque_val)}")
         with c2:
             preco_base = float(row['Preco Venda'])
-            desc = float(row['Desconto'])
+            desc = row['Desconto']
+            desc = float(desc) if pd.notna(desc) and str(desc).replace('.','',1).isdigit() else 0.0
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
