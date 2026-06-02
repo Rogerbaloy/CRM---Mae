@@ -67,7 +67,7 @@ with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
-   if senha == "1234":
+        if senha == "1234":
             try:
                 import gspread
                 from oauth2client.service_account import ServiceAccountCredentials
