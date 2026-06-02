@@ -94,9 +94,6 @@ with aba1:
         if st.button("Limpar Carrinho"):
             st.session_state.carrinho = []
             st.rerun()
-
-with aba2:
-    # ... resto do código ...
 with aba2:
     st.subheader("Cadastro de Clientes")
     with st.form("c"):
