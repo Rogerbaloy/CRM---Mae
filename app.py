@@ -37,12 +37,11 @@ with aba1:
     filtro = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df_prod['Categoria'].unique()))
     df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
     
-    # Inicializa o carrinho antes do loop
     if 'carrinho' not in st.session_state:
         st.session_state.carrinho = []
 
-for idx, row in df_f.iterrows():
-        # Só processa se o produto existir
+    # --- TUDO ISSO ABAIXO DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
+    for idx, row in df_f.iterrows():
         if pd.isna(row['Produto']): continue
         
         st.markdown('<div class="produto-card">', unsafe_allow_html=True)
@@ -56,7 +55,6 @@ for idx, row in df_f.iterrows():
             st.write(f"**Estoque:** {int(estoque_val)}")
             
         with c2:
-            # Cálculo de preço com try/except para evitar o erro de valor
             try:
                 preco_base = float(row['Preco Venda'])
                 desc = float(row['Desconto']) if pd.notna(row['Desconto']) else 0.0
@@ -83,8 +81,8 @@ for idx, row in df_f.iterrows():
         
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- DEPOIS QUE O LOOP TERMINAR (Alinhado com o for, fora dele) ---
-if st.session_state.carrinho:
+    # --- O CARRINHO TAMBÉM DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
+    if st.session_state.carrinho:
         st.write("---")
         st.subheader("🛒 Seu Carrinho")
         for item in st.session_state.carrinho:
@@ -96,6 +94,9 @@ if st.session_state.carrinho:
         if st.button("Limpar Carrinho"):
             st.session_state.carrinho = []
             st.rerun()
+
+with aba2:
+    # ... resto do código ...
 with aba2:
     st.subheader("Cadastro de Clientes")
     with st.form("c"):
