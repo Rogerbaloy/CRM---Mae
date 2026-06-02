@@ -1,33 +1,50 @@
 import streamlit as st
 import pandas as pd
 
-# Título do Projeto
-st.title("CRM da Mãe")
+# Configuração da Página
+st.set_page_config(page_title="CRM da Mãe", layout="wide")
 
-# Inicializar a lista de clientes no estado da sessão
-if 'clientes' not in st.session_state:
-    st.session_state.clientes = []
+st.title("✨ CRM da Mãe")
 
-# --- Formulário de Inserção ---
+# --- PARTE 1: CADASTRO DE CLIENTES ---
 st.subheader("Adicionar Novo Cliente")
-with st.form("form_cliente", clear_on_submit=True):
+with st.form("cadastro_cliente"):
     nome = st.text_input("Nome do Cliente")
-    telefone = st.text_input("Telefone")
+    tel = st.text_input("Telefone")
     email = st.text_input("E-mail")
-    submit_button = st.form_submit_button("Salvar Cliente")
+    submit = st.form_submit_button("Salvar Cliente")
+    
+    if submit:
+        st.success(f"Cliente {nome} adicionado com sucesso!")
 
-    if submit_button:
-        if nome:
-            novo_cliente = {"Nome": nome, "Telefone": telefone, "Email": email}
-            st.session_state.clientes.append(novo_cliente)
-            st.success(f"Cliente {nome} adicionado com sucesso!")
-        else:
-            st.error("O campo nome é obrigatório.")
+# --- PARTE 2: CATÁLOGO DE PRODUTOS ---
+st.markdown("---")
+st.header("🛍️ Catálogo de Produtos")
 
-# --- Funcionalidade de Listagem ---
-st.subheader("Lista de Clientes")
-if len(st.session_state.clientes) > 0:
-    df = pd.DataFrame(st.session_state.clientes)
-    st.table(df)
-else:
-    st.info("Nenhum cliente cadastrado ainda.")
+# Link da sua planilha de produtos (certifique-se que ela tenha: Produto, Marca, Categoria, Preço, Estoque)
+sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=Sheet1"
+
+# Carregar dados do catálogo
+try:
+    df_produtos = pd.read_csv(url)
+    
+    # Filtro de Gênero
+    genero = st.selectbox("Filtrar por gênero:", ["Todos", "Masculino", "Feminino"])
+    
+    if genero != "Todos":
+        df_exibicao = df_produtos[df_produtos['Categoria'] == genero]
+    else:
+        df_exibicao = df_produtos
+
+    # Exibição dos itens
+    for index, row in df_exibicao.iterrows():
+        col1, col2 = st.columns([3, 1])
+        col1.write(f"**{row['Produto']}** | Marca: {row['Marca']} | R$ {row['Preço']:.2f}")
+        col1.write(f"Estoque disponível: {row['Estoque']}")
+        
+        if col2.button("Comprar", key=f"btn_{index}"):
+            st.write(f"Você selecionou: {row['Produto']}")
+
+except Exception as e:
+    st.error("Erro ao carregar o catálogo. Verifique se a planilha tem as colunas corretas.")
