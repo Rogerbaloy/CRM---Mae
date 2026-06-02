@@ -72,7 +72,7 @@ with c2:
             st.markdown('</div>', unsafe_allow_html=True)
 
     # --- O CARRINHO TAMBÉM DEVE ESTAR RECUADO (DENTRO DA ABA1) ---
-        if st.session_state.carrinho:
+            if st.session_state.carrinho:
         st.write("---")
         st.subheader("🛒 Seu Carrinho")
         for item in st.session_state.carrinho:
