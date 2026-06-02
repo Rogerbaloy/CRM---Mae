@@ -115,9 +115,7 @@ with aba3:
                     st.rerun()
                 else:
                     st.error("Erro: Estoque insuficiente!")
-            
-        except Exception as e:
-            st.error(f"Erro na gestão: {e}")
+                    
             # --- BLOCO 3: REPOSIÇÃO DE ESTOQUE ---
             st.write("---")
             st.subheader("➕ Repor Estoque")
@@ -132,3 +130,6 @@ with aba3:
                 ws.update_cell(cell.row, 8, novo_estoque)
                 st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
                 st.rerun()
+            
+        except Exception as e:
+            st.error(f"Erro na gestão: {e}")
