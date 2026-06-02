@@ -28,24 +28,27 @@ st.markdown("""<div class="header-box"><h1 class="brand-title">✨ Perfumaria e 
 
 # ABAS
 aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
-
 with aba1:
     filtro = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df_prod['Categoria'].unique()))
     df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
     
+    # Inicializa o carrinho antes do loop
+    if 'carrinho' not in st.session_state:
+        st.session_state.carrinho = []
+
     for idx, row in df_f.iterrows():
         st.markdown('<div class="produto-card">', unsafe_allow_html=True)
         c1, c2 = st.columns([3, 1])
         with c1:
             st.subheader(f"{row['Marca']} - cod {int(row['Codigo'])} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
-            # Tenta converter para número, se falhar ou estiver vazio, mostra 0
             estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
             st.write(f"**Estoque:** {int(estoque_val)}")
         with c2:
             preco_base = float(row['Preco Venda'])
-            desc = row['Desconto']
-            desc = float(desc) if pd.notna(desc) and str(desc).replace('.','',1).isdigit() else 0.0
+            desc_raw = row['Desconto']
+            desc = float(desc_raw) if pd.notna(desc_raw) and str(desc_raw).replace('.','',1).isdigit() else 0.0
+            
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
@@ -55,12 +58,29 @@ with aba1:
             else:
                 st.write(f"### R$ {preco_final:.2f}")
                 
-            qtd = estoque_limite = int(row['Estoque']) if pd.notna(row['Estoque']) and str(row['Estoque']).replace('.','',1).isdigit() else 0
+            estoque_limite = int(row['Estoque']) if pd.notna(row['Estoque']) and str(row['Estoque']).replace('.','',1).isdigit() else 0
             qtd = st.number_input("Qtd", 1, max(1, estoque_limite), key=f"q_{idx}")
-            if st.button("🛒 Comprar via WhatsApp", key=f"btn_{idx}"):
-                st.link_button("Finalizar Pedido", f"https://wa.me/5551993144399?text=Olá! Quero {qtd}x {row['Produto']}")
+            
+            # Botão de Adicionar (dentro do loop)
+            if st.button("🛒 Adicionar ao Carrinho", key=f"btn_{idx}"):
+                item = f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})"
+                st.session_state.carrinho.append(item)
+                st.success(f"{row['Produto']} adicionado!")
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # --- DEPOIS QUE O LOOP TERMINAR (Alinhado com o for, fora dele) ---
+    if st.session_state.carrinho:
+        st.write("---")
+        st.subheader("🛒 Seu Carrinho")
+        for item in st.session_state.carrinho:
+            st.write(f"- {item}")
+        
+        msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
+        st.link_button("Finalizar Pedido via WhatsApp", f"https://wa.me/5551993144399?text={msg}")
+        
+        if st.button("Limpar Carrinho"):
+            st.session_state.carrinho = []
+            st.rerun()
 with aba2:
     st.subheader("Cadastro de Clientes")
     with st.form("c"):
