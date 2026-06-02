@@ -84,7 +84,7 @@ for idx, row in df_f.iterrows():
         st.markdown('</div>', unsafe_allow_html=True)
 
     # --- DEPOIS QUE O LOOP TERMINAR (Alinhado com o for, fora dele) ---
-    if st.session_state.carrinho:
+if st.session_state.carrinho:
         st.write("---")
         st.subheader("🛒 Seu Carrinho")
         for item in st.session_state.carrinho:
