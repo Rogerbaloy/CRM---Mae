@@ -46,8 +46,8 @@ for idx, row in df_f.iterrows():
     # Só processa se o produto existir
     if pd.isna(row['Produto']): continue
     
-       st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-       c1, c2 = st.columns([3, 1])
+st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+        c1, c2 = st.columns([3, 1])
        with c1:
         # Título limpo: Marca - Codigo - Nome
         codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else "0"
