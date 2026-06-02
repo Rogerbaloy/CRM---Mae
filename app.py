@@ -39,7 +39,9 @@ with aba1:
         with c1:
             st.subheader(f"🌸 {row['Produto']} - {row['Marca']}")
             st.write(f"**Descrição:** {row['Descricao']}")
-            st.write(f"**Estoque:** {int(row['Estoque'])}")
+            # Tenta converter para número, se falhar ou estiver vazio, mostra 0
+            estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
+            st.write(f"**Estoque:** {int(estoque_val)}")
         with c2:
             preco_base = float(row['Preco Venda'])
             desc = float(row['Desconto'])
