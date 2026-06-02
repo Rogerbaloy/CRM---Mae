@@ -41,40 +41,28 @@ with aba1:
     if 'carrinho' not in st.session_state:
         st.session_state.carrinho = []
 
-    # Substitua seu loop atual por este formato garantido:
 for idx, row in df_f.iterrows():
-    # Só processa se o produto existir
-    if pd.isna(row['Produto']): continue
-    
-st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-    c1, c2 = st.columns([3, 1])
-        with c1:
-        # Título limpo: Marca - Codigo - Nome
-        codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else "0"
-        st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
-        st.write(f"**Descrição:** {row['Descricao']}")
-        st.write(f"**Estoque:** {int(row['Estoque']) if pd.notna(row['Estoque']) else 0}")
+        # Só processa se o produto existir
+        if pd.isna(row['Produto']): continue
         
+        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+        c1, c2 = st.columns([3, 1])
+        
+        with c1:
+            codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else 0
+            st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
+            st.write(f"**Descrição:** {row['Descricao']}")
+            estoque_val = row['Estoque'] if pd.notna(row['Estoque']) else 0
+            st.write(f"**Estoque:** {int(estoque_val)}")
+            
         with c2:
-            # Pega o valor e limpa se for vazio ou texto estranho
-            p_val = row['Preco Venda']
-           # Substitua toda essa linha 51 (ou o bloco todo de cálculo do preço) por:
+            # Cálculo de preço com try/except para evitar o erro de valor
             try:
-                p_val = row['Preco Venda']
-                preco_base = float(p_val)
+                preco_base = float(row['Preco Venda'])
+                desc = float(row['Desconto']) if pd.notna(row['Desconto']) else 0.0
             except:
                 preco_base = 0.0
-
-            try:
-                d_val = row['Desconto']
-                desc = float(d_val)
-            except:
                 desc = 0.0
-            
-            preco_final = preco_base * (1 - desc/100)
-            
-            d_val = row['Desconto']
-            desc = float(d_val) if pd.notna(d_val) and str(d_val).replace('.','',1).replace(',','').isdigit() else 0.0
             
             preco_final = preco_base * (1 - desc/100)
             
@@ -85,14 +73,14 @@ st.markdown('<div class="produto-card">', unsafe_allow_html=True)
             else:
                 st.write(f"### R$ {preco_final:.2f}")
                 
-            estoque_limite = int(row['Estoque']) if pd.notna(row['Estoque']) and str(row['Estoque']).replace('.','',1).isdigit() else 0
+            estoque_limite = int(row['Estoque']) if pd.notna(row['Estoque']) else 0
             qtd = st.number_input("Qtd", 1, max(1, estoque_limite), key=f"q_{idx}")
             
-            # Botão de Adicionar (dentro do loop)
             if st.button("🛒 Adicionar ao Carrinho", key=f"btn_{idx}"):
                 item = f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})"
                 st.session_state.carrinho.append(item)
                 st.success(f"{row['Produto']} adicionado!")
+        
         st.markdown('</div>', unsafe_allow_html=True)
 
     # --- DEPOIS QUE O LOOP TERMINAR (Alinhado com o for, fora dele) ---
