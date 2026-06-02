@@ -117,12 +117,12 @@ with aba3:
             client = gspread.authorize(creds)
             ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
             
-           # E na sua Aba 3 (Gestão), onde você lê os dados para o cadastro:
-           dados_produtos = ws.get_all_records()
-           df_atualizado = pd.DataFrame(dados_produtos)
-           # Filtra para remover linhas vazias antes de criar a lista de produtos
-           df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
-           lista_produtos = df_atualizado['Produto'].tolist()
+            # E na sua Aba 3 (Gestão), onde você lê os dados para o cadastro:
+            dados_produtos = ws.get_all_records()
+            df_atualizado = pd.DataFrame(dados_produtos)
+            # Filtra para remover linhas vazias antes de criar a lista de produtos
+            df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
+            lista_produtos = df_atualizado['Produto'].tolist()
             
             # --- BLOCO 1: APLICAR DESCONTO ---
             with st.expander("🏷️ Aplicar Desconto em Produto"):
