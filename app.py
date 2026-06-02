@@ -130,6 +130,29 @@ with aba3:
                 ws.update_cell(cell.row, 8, novo_estoque)
                 st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
                 st.rerun()
+            # --- BLOCO 4: CADASTRAR NOVO PRODUTO ---
+            st.write("---")
+            st.subheader("➕ Cadastro de Novo Produto")
+            
+            with st.form("form_cadastro"):
+                cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
+                nome_prod = st.text_input("Nome/Descrição do Produto:")
+                marca = st.text_input("Marca:")
+                preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+                
+                if st.form_submit_button("Cadastrar Produto"):
+                    # Gera o código automático (pega o maior código atual e soma 1)
+                    codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
+                    novo_codigo = max(codigos) + 1 if codigos else 1
+                    
+                    # Adiciona a linha na planilha
+                    # Colunas: Codigo, Categoria, Produto, Marca, Descricao, Preco, Desconto, Estoque
+                    nova_linha = [novo_codigo, cat, nome_prod, marca, nome_prod, preco, 0, estoque_ini]
+                    ws.append_row(nova_linha)
+                    
+                    st.success(f"Produto {nome_prod} cadastrado com sucesso! (Código: {novo_codigo})")
+                    st.rerun()
             
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
