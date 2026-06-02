@@ -89,7 +89,7 @@ with aba1:
             st.write(f"- {item}")
         
         msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
-        st.link_button("Finalizar Pedido via WhatsApp", f"https://wa.me/5551993144399?text={msg}")
+        st.link_button("Finalizar Pedido via WhatsApp", f"https://wa.me/5551997812374?text={msg}")
         
         if st.button("Limpar Carrinho"):
             st.session_state.carrinho = []
