@@ -47,8 +47,8 @@ for idx, row in df_f.iterrows():
     if pd.isna(row['Produto']): continue
     
 st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-        c1, c2 = st.columns([3, 1])
-       with c1:
+    c1, c2 = st.columns([3, 1])
+        with c1:
         # Título limpo: Marca - Codigo - Nome
         codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else "0"
         st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
