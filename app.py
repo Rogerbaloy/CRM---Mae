@@ -48,7 +48,20 @@ with aba1:
         with c2:
             # Pega o valor e limpa se for vazio ou texto estranho
             p_val = row['Preco Venda']
-            preco_base = float(p_val) if pd.notna(p_val) and str(p_val).replace('.','',1).replace(',','').isdigit() else 0.0
+           # Substitua toda essa linha 51 (ou o bloco todo de cálculo do preço) por:
+            try:
+                p_val = row['Preco Venda']
+                preco_base = float(p_val)
+            except:
+                preco_base = 0.0
+
+            try:
+                d_val = row['Desconto']
+                desc = float(d_val)
+            except:
+                desc = 0.0
+            
+            preco_final = preco_base * (1 - desc/100)
             
             d_val = row['Desconto']
             desc = float(d_val) if pd.notna(d_val) and str(d_val).replace('.','',1).replace(',','').isdigit() else 0.0
