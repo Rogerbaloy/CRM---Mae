@@ -125,8 +125,8 @@ with aba3:
             lista_produtos = df_atualizado['Produto'].tolist()
             
             # --- BLOCO 1: APLICAR DESCONTO ---
-           # Exemplo no Bloco de Desconto:
-        with st.expander("🏷️ Aplicar Desconto em Produto"):
+            # Exemplo no Bloco de Desconto:
+            with st.expander("🏷️ Aplicar Desconto em Produto"):
             selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
             # Extrai o código do texto "Cod 1 - ..."
             cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
