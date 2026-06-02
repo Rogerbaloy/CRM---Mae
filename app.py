@@ -87,11 +87,17 @@ with aba3:
             df_atualizado = pd.DataFrame(dados_produtos)
             lista_produtos = df_atualizado['Produto'].tolist()
             
-            # --- BLOCO 1: APLICAR DESCONTO ---
+           # --- BLOCO 1: APLICAR DESCONTO ---
             st.write("---")
-            with st.expander("🏷️ Aplicar Desconto em Produto")
-            prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
-            desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+            with st.expander("🏷️ Aplicar Desconto em Produto"): # <--- ADICIONE O : AQUI
+                prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
+                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+                
+                if st.button("Confirmar Desconto"):
+                    cell = ws.find(prod_sel)
+                    ws.update_cell(cell.row, 7, desc_sel)
+                    st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
+                    st.rerun()
             
             if st.button("Confirmar Desconto"):
                 cell = ws.find(prod_sel)
@@ -99,24 +105,23 @@ with aba3:
                 st.success(f"Desconto de {desc_sel}% aplicado ao {prod_sel}!")
                 st.rerun()
 
-            # --- BLOCO 2: REGISTRAR VENDA ---
+           # --- BLOCO 2: REGISTRAR VENDA ---
             st.write("---")
-            with st.expander("📉 Registrar Venda (Baixa de Estoque)")
-            prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
-            qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
-            
-            if st.button("Registrar Venda"):
-                cell = ws.find(prod_venda)
-                # Garantindo que lemos da coluna 8 (estoque)
-                estoque_atual = int(ws.cell(cell.row, 8).value)
+            with st.expander("📉 Registrar Venda (Baixa de Estoque)"): # <--- ADICIONE O : AQUI
+                prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
+                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
-                if estoque_atual >= qtd_venda:
-                    novo_estoque = estoque_atual - qtd_venda
-                    ws.update_cell(cell.row, 8, novo_estoque)
-                    st.success(f"Venda registrada! Estoque de {prod_venda} agora é {novo_estoque}.")
-                    st.rerun()
-                else:
-                    st.error("Erro: Estoque insuficiente!")
+                if st.button("Registrar Venda"):
+                    cell = ws.find(prod_venda)
+                    estoque_atual = int(ws.cell(cell.row, 8).value)
+                    
+                    if estoque_atual >= qtd_venda:
+                        novo_estoque = estoque_atual - qtd_venda
+                        ws.update_cell(cell.row, 8, novo_estoque)
+                        st.success(f"Venda registrada! Estoque de {prod_venda} agora é {novo_estoque}.")
+                        st.rerun()
+                    else:
+                        st.error("Erro: Estoque insuficiente!")
                     
             # --- BLOCO 3: REPOSIÇÃO DE ESTOQUE ---
             st.write("---")
@@ -132,10 +137,9 @@ with aba3:
                 ws.update_cell(cell.row, 8, novo_estoque)
                 st.success(f"Reposição feita! Estoque de {prod_repo} agora é {novo_estoque}.")
                 st.rerun()
-            # --- BLOCO 4: CADASTRAR NOVO PRODUTO ---
+           # --- BLOCO 4: CADASTRAR NOVO PRODUTO ---
             st.write("---")
-            with st.expander("➕ Cadastro de Novo Produto")
-            
+            with st.expander("➕ Cadastro de Novo Produto"): # <--- ADICIONE O : AQUI
             with st.form("form_cadastro"):
                 cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
                 nome_prod = st.text_input("Nome/Descrição do Produto:")
