@@ -2,59 +2,62 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# --- CONFIGURAÇÃO VISUAL ---
 st.set_page_config(page_title="Boutique de Perfumes", layout="wide")
 
-st.title("✨ Boutique de Perfumes")
+# CSS para o estilo "Boutique" e Mobile
+st.markdown("""
+    <style>
+    .stApp {background-image: url('https://img.freepik.com/fotos-gratis/fundo-rosa-pastel-com-textura_23-2148785900.jpg'); background-size: cover;}
+    .produto-card {background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 20px; border: 1px solid #d4af37; margin-bottom: 15px;}
+    h1 {color: #8a2be2; text-align: center;}
+    </style>
+""", unsafe_allow_html=True)
 
 # Carregar Dados
 sheet_id = "1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=Sheet1"
+df = pd.read_csv(url)
+df.columns = df.columns.str.strip()
 
-@st.cache_data(ttl=60)
-def carregar_dados():
-    df = pd.read_csv(url)
-    df.columns = df.columns.str.strip()
-    # Limpeza forçada para garantir que preços sejam números
-    for col in ['Preço Venda', 'Preço Pago']:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col].astype(str).str.replace('R$', '').str.replace(',', '.'), errors='coerce').fillna(0)
-    return df
+# --- ÁREA ADMINISTRATIVA ---
+with st.sidebar:
+    st.subheader("🔐 Área da Gerente")
+    senha = st.text_input("Senha da Gerente", type="password")
 
-df = carregar_dados()
+# --- CONTEÚDO PRINCIPAL ---
+st.title("✨ Boutique de Perfumes")
 
 # Abas
-aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "📊 Financeiro", "👤 Clientes"])
+aba1, aba3 = st.tabs(["🛍️ Catálogo", "👤 Cadastro"])
 
 with aba1:
     genero = st.selectbox("Filtrar por:", ["Todos", "Masculino", "Feminino"])
     df_f = df if genero == "Todos" else df[df['Categoria'] == genero]
     
     for idx, row in df_f.iterrows():
-        # Verificação de segurança para exibição
-        preco = row['Preço Venda'] if pd.notnull(row['Preço Venda']) else 0
-        
         with st.container():
-            c1, c2, c3, c4 = st.columns([3, 1, 1, 1])
-            c1.write(f"**{row['Produto']}**")
-            c2.write(f"R$ {preco:.2f}")
-            qtd = c3.number_input("Qtd", 1, int(row['Estoque']), key=f"qtd_{idx}")
+            st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+            st.subheader(f"{row['Produto']}")
+            c1, c2 = st.columns(2)
+            c1.write(f"Preço: R$ {row['Preço Venda']:.2f}")
+            qtd = c2.number_input("Qtd", 1, int(row['Estoque']), key=f"q{idx}")
             
-            if c4.button("🛒 Comprar", key=f"btn_{idx}"):
-                msg = f"Olá! Quero comprar {qtd}x {row['Produto']}. Obrigado pela compra, volte sempre!"
-                st.link_button("Finalizar no Zap", f"https://wa.me/5551993144399?text={msg.replace(' ', '%20')}")
+            if st.button("🛒 Comprar", key=f"btn{idx}"):
+                msg = f"Olá, quero {qtd}x {row['Produto']}!"
+                st.link_button("Enviar no WhatsApp", f"https://wa.me/5551993144399?text={msg.replace(' ', '%20')}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-with aba2:
-    st.header("Visão Financeira")
-    df['Lucro'] = df['Preço Venda'] - df['Preço Pago']
-    st.metric("Lucro Total", f"R$ {df['Lucro'].sum():.2f}")
-    fig = px.bar(df, x='Produto', y='Lucro')
-    st.plotly_chart(fig)
+# --- DASHBOARD PROTEGIDO ---
+if senha == "1234": # Troque a senha aqui!
+    with st.expander("📊 Painel Financeiro (Privado)"):
+        st.metric("Lucro Total", f"R$ {(df['Preço Venda'] - df['Preço Pago']).sum():.2f}")
+        fig = px.bar(df, x='Produto', y=df['Preço Venda'] - df['Preço Pago'], title="Lucro por item")
+        st.plotly_chart(fig)
 
 with aba3:
-    st.header("Cadastro de Cliente")
     with st.form("cadastro"):
-        nome = st.text_input("Nome Completo")
-        cpf = st.text_input("CPF")
-        cel = st.text_input("Número (WhatsApp)")
+        st.text_input("Nome")
+        st.text_input("CPF")
         if st.form_submit_button("Cadastrar"):
-            st.success(f"Cliente {nome} cadastrado!")
+            st.success("Cadastro realizado!")
