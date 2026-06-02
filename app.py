@@ -32,8 +32,14 @@ with st.sidebar:
 st.title("✨ Boutique de Perfumes")
 
 # --- CATÁLOGO ---
-genero = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df['Categoria'].unique()))
+st.markdown("### 🛍️ Escolha seus produtos")
+genero = st.selectbox("Filtrar por Categoria:", ["Todos"] + list(df['Categoria'].unique()), label_visibility="visible")
+
+# Filtro dos dados
 df_f = df if genero == "Todos" else df[df['Categoria'] == genero]
+
+# Adicionamos um pequeno espaço controlado em vez de deixar o Streamlit criar um grande
+st.write("")
 
 for idx, row in df_f.iterrows():
     with st.container():
