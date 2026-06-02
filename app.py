@@ -94,7 +94,7 @@ with c2:
                 st.session_state.carrinho.append(item)
                 st.success("Adicionado!")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
     # Resumo do Carrinho
     if st.session_state.carrinho:
