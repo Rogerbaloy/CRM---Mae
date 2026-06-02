@@ -96,19 +96,19 @@ with c2:
         
                 st.markdown('</div>', unsafe_allow_html=True)
 
-    # Resumo do Carrinho
-    if st.session_state.carrinho:
-        st.write("---")
-        st.subheader("🛒 Seu Carrinho")
-        for item in st.session_state.carrinho:
-            st.write(f"- {item}")
+               # Resumo do Carrinho
+           if st.session_state.carrinho:
+                st.write("---")
+                st.subheader("🛒 Seu Carrinho")
+           for item in st.session_state.carrinho:
+                st.write(f"- {item}")
         
-        msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
-        st.link_button("Finalizar no WhatsApp", f"https://wa.me/5551997812374?text={msg}")
+                msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
+                st.link_button("Finalizar no WhatsApp", f"https://wa.me/5551997812374?text={msg}")
         
-        if st.button("Limpar Carrinho"):
-            st.session_state.carrinho = []
-            st.rerun()
+           if st.button("Limpar Carrinho"):
+               st.session_state.carrinho = []
+               st.rerun()
 with aba2:
     st.subheader("Cadastro de Clientes")
     with st.form("c"):
