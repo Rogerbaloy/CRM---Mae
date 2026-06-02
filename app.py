@@ -67,21 +67,22 @@ with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
-  if senha == "1234":
-            try:
-                import gspread
-                from oauth2client.service_account import ServiceAccountCredentials
-                
-                # Acesse as credenciais diretamente
-                secrets = st.secrets["gcp_service_account"]
-                
-                scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-                creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
-                client = gspread.authorize(creds)
-                
-                sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-                st.success("Conexão estabelecida!")
-                
-                # ... resto do código ...
-            except Exception as e:
-                st.error(f"Erro: {e}")
+    if senha == "1234":
+        try:
+            import gspread
+            from oauth2client.service_account import ServiceAccountCredentials
+            
+            # Acesse as credenciais diretamente
+            secrets = st.secrets["gcp_service_account"]
+            
+            scope = ['https://spreadsheets.google.com/feeds', 'https://spreadsheets.google.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+            client = gspread.authorize(creds)
+            
+            sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            st.success("Conexão estabelecida!")
+            
+            # Aqui você pode continuar seu código de gestão...
+            
+        except Exception as e:
+            st.error(f"Erro na conexão: {e}")
