@@ -89,7 +89,7 @@ with aba3:
             
             # --- BLOCO 1: APLICAR DESCONTO ---
             st.write("---")
-            st.subheader("🏷️ Aplicar Desconto em Produto")
+            with st.expander("🏷️ Aplicar Desconto em Produto")
             prod_sel = st.selectbox("Escolha o perfume:", lista_produtos, key="desc_prod")
             desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
             
@@ -101,7 +101,7 @@ with aba3:
 
             # --- BLOCO 2: REGISTRAR VENDA ---
             st.write("---")
-            st.subheader("📉 Registrar Venda (Baixa de Estoque)")
+            with st.expander("📉 Registrar Venda (Baixa de Estoque)")
             prod_venda = st.selectbox("Produto Vendido:", lista_produtos, key="venda_prod")
             qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
             
@@ -134,7 +134,7 @@ with aba3:
                 st.rerun()
             # --- BLOCO 4: CADASTRAR NOVO PRODUTO ---
             st.write("---")
-            st.subheader("➕ Cadastro de Novo Produto")
+            with st.expander("➕ Cadastro de Novo Produto")
             
             with st.form("form_cadastro"):
                 cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
