@@ -67,25 +67,21 @@ with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
-    if senha == "1234":
-        try:
-            # 1. Configura a conexão usando o nome exato que está no Secrets
-            import gspread
-            from oauth2client.service_account import ServiceAccountCredentials
-            
-            # ATENÇÃO: O nome aqui precisa ser idêntico ao que você colocou no Secrets (entre colchetes)
-            creds_dict = dict(st.secrets["gcp_service_account"])
-            
-            scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-            client = gspread.authorize(creds)
-            
-            # 2. Abre a planilha pelo ID (aquele código gigante da URL)
-            sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-            
-            st.write("Conexão com a planilha estabelecida com sucesso!")
-            
-            # Seu formulário de desconto continua aqui...
-            
-        except Exception as e:
-            st.error(f"Erro na conexão: {e}")
+   if senha == "1234":
+            try:
+                import gspread
+                from oauth2client.service_account import ServiceAccountCredentials
+                
+                # Acesse as credenciais diretamente
+                secrets = st.secrets["gcp_service_account"]
+                
+                scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+                client = gspread.authorize(creds)
+                
+                sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+                st.success("Conexão estabelecida!")
+                
+                # ... resto do código ...
+            except Exception as e:
+                st.error(f"Erro: {e}")
