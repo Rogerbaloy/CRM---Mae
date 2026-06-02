@@ -67,22 +67,30 @@ with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
-    if senha == "1234":
-        try:
-            import gspread
-            from oauth2client.service_account import ServiceAccountCredentials
-            
-            # Acesse as credenciais diretamente
-            secrets = st.secrets["gcp_service_account"]
-            
-            scope = ['https://spreadsheets.google.com/feeds', 'https://spreadsheets.google.com/auth/drive']
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
-            client = gspread.authorize(creds)
-            
-            sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-            st.success("Conexão estabelecida!")
-            
-            # Aqui você pode continuar seu código de gestão...
-            
-        except Exception as e:
-            st.error(f"Erro na conexão: {e}")
+   if senha == "1234":
+            try:
+                import gspread
+                from oauth2client.service_account import ServiceAccountCredentials
+                
+                # Certifique-se de que o Secrets está sendo carregado corretamente
+                secrets = st.secrets["gcp_service_account"]
+                
+                # Definimos os escopos exatos para Planilhas e Drive
+                scope = [
+                    'https://www.googleapis.com/auth/spreadsheets',
+                    'https://www.googleapis.com/auth/drive'
+                ]
+                
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+                client = gspread.authorize(creds)
+                
+                # Tenta abrir a planilha pelo ID
+                sh = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0")
+                ws = sh.worksheet("Produtos")
+                
+                st.success("Conexão estabelecida com sucesso!")
+                
+                # Agora você pode usar 'ws' para ler ou escrever
+                
+            except Exception as e:
+                st.error(f"Erro na conexão: {e}")
