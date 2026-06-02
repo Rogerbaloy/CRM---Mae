@@ -65,7 +65,7 @@ except:
     estoque_val = 0
 st.write(f"**Estoque:** {estoque_val}")
             
-        with c2:
+with c2:
             # Preço seguro
             try:
                 preco_base = float(row['Preco Venda'])
