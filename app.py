@@ -302,3 +302,38 @@ with aba3:
                                     
         except Exception as e:
             st.error(f"Erro na conexão: {e}")
+
+with aba4:
+     st.subheader("📈 Dashboard de Vendas e Lucro")
+            if st.button("Atualizar Relatório"):
+                try:
+                    ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+                    ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+                    
+                    df_vendas = pd.DataFrame(ws_vendas.get_all_records())
+                    df_prod = pd.DataFrame(ws_prod.get_all_records())
+                    
+                    if not df_vendas.empty:
+                        df_vendas['Preco total'] = pd.to_numeric(df_vendas['Preco total'])
+                        df_vendas['Quantidade'] = pd.to_numeric(df_vendas['Quantidade'])
+                        
+                        def calcular_lucro(row):
+                            nome_prod_formatado = row['Produto'].split(" - ")[1]
+                            match = df_prod[df_prod['Produto'] == nome_prod_formatado]
+                            if not match.empty:
+                                custo = float(match.iloc[0]['Preco compra'])
+                                preco_unitario = float(row['Preco total']) / float(row['Quantidade'])
+                                return (preco_unitario - custo) * float(row['Quantidade'])
+                            return 0
+                        
+                        df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
+                        
+                        col1, col2 = st.columns(2)
+                        col1.metric("Total Vendido", f"R$ {df_vendas['Preco total'].sum():,.2f}")
+                        col2.metric("Lucro Total", f"R$ {df_vendas['Lucro Total'].sum():,.2f}")
+                        
+                        st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
+                    else:
+                        st.info("Nenhuma venda registrada.")
+                except Exception as e:
+                    st.error(f"Erro ao carregar relatório: {e}")
