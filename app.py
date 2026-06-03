@@ -121,19 +121,17 @@ with aba3:
             # 4. AQUI VOCÊ PODE COLOCAR SEUS EXPANDERS (Desconto, etc)
             with st.expander("🏷️ Aplicar Desconto em Produto"):
                 selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
-                # Extrai o código corretamente
                 cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
                 desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
                 
                 if st.button("Confirmar Desconto"):
-                    # Busca a linha do produto pelo código na Coluna 1
+                    # Busca o produto pelo código na Coluna 1
                     cell = ws.find(str(cod_extraido), in_column=1)
                     
-                    # Atualiza a Coluna 7 (Desconto)
-                    ws.update_cell(cell.row, 7, desc_sel)
+                    # Atualiza a Coluna 8 (Desconto)
+                    ws.update_cell(cell.row, 8, desc_sel)
                     
-                    st.success(f"Desconto de {desc_sel}% aplicado ao {selecionado}!")
-                    # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
+                    st.success(f"Desconto de {desc_sel}% aplicado!")
                     st.rerun()
                 
         except Exception as e:
