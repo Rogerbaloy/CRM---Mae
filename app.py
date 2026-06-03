@@ -76,4 +76,11 @@ with aba1:
             st.rerun()
 
 with aba2:
-    st.write("Clientes funcionando")
+    st.subheader("👤 Cadastro de Clientes")
+    with st.form("form_cliente"):
+        nome = st.text_input("Nome:")
+        cpf = st.text_input("CPF:")
+        tel = st.text_input("Telefone:")
+        
+        if st.form_submit_button("Cadastrar Cliente"):
+            st.success(f"Cliente {nome} cadastrado com sucesso!")
