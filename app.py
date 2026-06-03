@@ -205,6 +205,26 @@ with aba3:
                             st.error(f"Estoque insuficiente! Disponível: {estoque_atual}")
                     except Exception as e:
                         st.error(f"Erro ao registrar venda: {e}")
+               # --- BLOCO: REPOR ESTOQUE ---
+            with st.expander("➕ Repor Estoque"):
+                prod_repo = st.selectbox("Escolher perfume:", lista_formatada, key="repo_prod")
+                cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
+                qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
+                
+                if st.button("Confirmar Reposição"):
+                    try:
+                        # Busca o produto na Coluna 1
+                        cell = ws.find(str(cod_repo), in_column=1)
+                        # Lê o estoque atual na Coluna 9
+                        estoque_atual = int(ws.cell(cell.row, 9).value)
+                        
+                        # Atualiza a Coluna 9 somando a quantidade
+                        ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
+                        
+                        st.success(f"Reposição feita! Novo estoque: {estoque_atual + qtd_repo}")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Erro na reposição: {e}")
                         
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
