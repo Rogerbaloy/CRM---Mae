@@ -241,15 +241,15 @@ with aba3:
                 # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
                 
                 with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
-                # --- NOVO: Seleção de cliente para o histórico ---
-                # (Assumindo que você tenha uma lista de clientes ou um input simples)
-                   nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
+                     # --- NOVO: Seleção de cliente para o histórico ---
+                     # (Assumindo que você tenha uma lista de clientes ou um input simples)
+                     nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
                 
-                prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
-                cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
-                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+                     prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+                     cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
+                     qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
-                if st.button("Confirmar Venda"):
+                   if st.button("Confirmar Venda"):
                     try:
                         # 1. Conectar na aba Produtos e Vendas
                         ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
