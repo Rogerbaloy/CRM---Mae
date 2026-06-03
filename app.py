@@ -195,40 +195,30 @@ with aba3:
             
             # Aqui é onde o seu código deve estar para evitar erros de fechamento
             st.write("Sistema pronto para gestão.")
+            
             # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
-                nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
                 prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
                 cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
                 qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
                 if st.button("Confirmar Venda"):
                     try:
-                        # 1. Conectar na aba Produtos e Vendas
-                        ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-                        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+                        # Busca o produto pelo código na Coluna 1
+                        cell = ws.find(str(cod_venda), in_column=1)
                         
-                        # 2. Atualizar Estoque (Aba Produtos)
-                        cell = ws_prod.find(str(cod_venda), in_column=1)
-                        estoque_atual = int(ws_prod.cell(cell.row, 9).value)
-                        preco_venda = float(ws_prod.cell(cell.row, 6).value)
+                        # Pega o estoque atual na Coluna 9
+                        estoque_atual = int(ws.cell(cell.row, 9).value)
                         
                         if estoque_atual >= qtd_venda:
-                            ws_prod.update_cell(cell.row, 9, estoque_atual - qtd_venda)
-                            
-                            # 3. Registrar na aba Vendas
-                            from datetime import datetime
-                            valor_total = preco_venda * qtd_venda
-                            ws_vendas.append_row([str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                                                 nome_cliente, prod_venda, qtd_venda, valor_total])
-                            
-                            st.success(f"Venda de {qtd_venda} un. registrada com sucesso!")
+                            # Atualiza a Coluna 9 com o novo valor
+                            ws.update_cell(cell.row, 9, estoque_atual - qtd_venda)
+                            st.success(f"Venda registrada! Novo estoque: {estoque_atual - qtd_venda}")
                             st.rerun()
                         else:
-                            st.error("Estoque insuficiente!")
-                            
+                            st.error(f"Estoque insuficiente! Disponível: {estoque_atual}")
                     except Exception as e:
-                        st.error(f"Erro ao registrar: {e}")
+                        st.error(f"Erro ao registrar venda: {e}")
 
         except Exception as e:
             st.error(f"Erro na conexão: {e}")
