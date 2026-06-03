@@ -275,4 +275,4 @@ with aba3:
                             st.error("Estoque insuficiente!")
                             
                     except Exception as e:                        
-                    st.error(f"Erro ao registrar: {e}")
+                     st.error(f"Erro ao registrar: {e}")
