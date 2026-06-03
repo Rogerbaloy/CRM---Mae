@@ -179,27 +179,40 @@ with aba3:
                     st.rerun()
 
            # --- BLOCO 4: CADASTRO CORRIGIDO ---
-                if st.form_submit_button("Cadastrar Produto"):
-                 if nome_prod and marca:
-                   codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
-                   novo_codigo = max(codigos) + 1 if codigos else 1
-        
-        # A ORDEM ABAIXO DEVE SER EXATAMENTE A ORDEM DAS COLUNAS A ATÉ I:
-        # A:Codigo, B:Produto, C:Marca, D:Descricao, E:Categoria, F:Preco, G:Custo, H:Desconto, I:Estoque
-            nova_linha = [
-            int(novo_codigo),     # Coluna A
-            str(nome_prod),       # Coluna B
-            str(marca),           # Coluna C
-            str(nome_prod),       # Coluna D (Descrição)
-            str(cat),             # Coluna E
-            float(preco),         # Coluna F
-            0.0,                  # Coluna G (Preco Compra - coloque 0 ou ajuste)
-            0.0,                  # Coluna H (Desconto)
-            int(estoque_ini)      # Coluna I (Estoque)
-        ]
-        
-            ws.append_row(nova_linha)
-            st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
-            st.rerun()       
-        except Exception as e:
-            st.error(f"Erro na gestão: {e}")
+            with st.expander("➕ Cadastro de Novo Produto"):
+                # O with st.form é OBRIGATÓRIO aqui
+                with st.form("form_cadastro"):
+                    cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
+                    nome_prod = st.text_input("Nome/Descrição do Produto:")
+                    marca = st.text_input("Marca:")
+                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+                    
+                    # O botão DEVE estar dentro do with st.form
+                    submit_button = st.form_submit_button("Cadastrar Produto")
+                    
+                    if submit_button:
+                        if nome_prod and marca:
+                            try:
+                                codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
+                                novo_codigo = max(codigos) + 1 if codigos else 1
+                                
+                                nova_linha = [
+                                    int(novo_codigo), # A
+                                    str(nome_prod),   # B
+                                    str(marca),       # C
+                                    str(nome_prod),   # D
+                                    str(cat),         # E
+                                    float(preco),     # F
+                                    0.0,              # G
+                                    0.0,              # H
+                                    int(estoque_ini)  # I
+                                ]
+                                
+                                ws.append_row(nova_linha)
+                                st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Erro ao salvar: {e}")
+                        else:
+                            st.error("Por favor, preencha o Nome e a Marca!")
