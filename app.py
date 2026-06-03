@@ -178,7 +178,7 @@ with aba3:
                     st.success("Reposição feita!")
                     st.rerun()
 
-           # --- BLOCO 4: CADASTRO CORRIGIDO ---
+           # --- BLOCO 4: CADASTRO COM ESTRUTURA BLINDADA ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
@@ -193,6 +193,7 @@ with aba3:
                         if not nome_prod or not marca:
                             st.error("Por favor, preencha o Nome e a Marca!")
                         else:
+                            # Abertura do try
                             try:
                                 codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                                 novo_codigo = max(codigos) + 1 if codigos else 1
@@ -206,5 +207,7 @@ with aba3:
                                 ws.append_row(nova_linha)
                                 st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
                                 st.rerun()
+                            # Fechamento do try e abertura do except
                             except Exception as e:
                                 st.error(f"Erro ao salvar: {e}")
+                            # Fim da estrutura
