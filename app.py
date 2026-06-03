@@ -214,5 +214,5 @@ with aba3:
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Erro ao salvar: {e}")
-                        else:
-                            st.error("Por favor, preencha o Nome e a Marca!")
+                            else:
+                                st.error("Por favor, preencha o Nome e a Marca!")
