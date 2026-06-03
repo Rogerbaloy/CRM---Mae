@@ -15,7 +15,8 @@ df_prod = load_data("Produtos")
 
 st.title("Teste de Execução")
 
-aba1, aba2 = st.tabs(["🛍️ Catálogo", "👤 Clientes"])
+# ABAS
+aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
 
 with aba1:
     # 1. Filtro
