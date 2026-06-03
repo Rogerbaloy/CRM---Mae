@@ -178,7 +178,7 @@ with aba3:
             # Conexão (Esta parte deve estar correta)
             import gspread
             from oauth2client.service_account import ServiceAccountCredentials
-            with aba4:
+with aba4:
     st.subheader("📈 Dashboard de Vendas e Lucro")
     
     if st.button("Atualizar Relatório"):
