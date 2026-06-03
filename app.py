@@ -178,7 +178,8 @@ with aba3:
                     st.success("Reposição feita!")
                     st.rerun()
 
-          # --- BLOCO 4: CADASTRO 100% SEGURO ---
+       
+            # --- BLOCO 4: CADASTRO COM FECHAMENTO EXPLICITO ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
@@ -194,15 +195,14 @@ with aba3:
                             st.error("Por favor, preencha o Nome e a Marca!")
                         else:
                             try:
-                                # Processamento dos dados
                                 codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                                 novo_codigo = max(codigos) + 1 if codigos else 1
                                 nova_linha = [int(novo_codigo), str(nome_prod), str(marca), str(nome_prod), str(cat), float(preco), 0.0, 0.0, int(estoque_ini)]
-                                
-                                # Ação na planilha
                                 ws.append_row(nova_linha)
                                 st.success(f"Produto {nome_prod} cadastrado!")
                                 st.rerun()
                             except Exception as e:
-                                # O except está alinhado com o try acima
                                 st.error(f"Erro ao salvar: {e}")
+            
+            # ATENÇÃO: NENHUMA LINHA DE CÓDIGO DEVE FICAR ABAIXO DISSO 
+            # COM O MESMO RECUO DO 'with' DO EXPANDER.
