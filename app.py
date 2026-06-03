@@ -92,11 +92,13 @@ with aba2:
             st.success(f"Cliente {nome} cadastrado com sucesso!")
 
         
-        with aba3:
-            st.subheader("🔐 Painel Exclusivo da Mi")
+with aba3:
+    st.subheader("🔐 Painel Exclusivo da Mi")
+    # A SENHA DEVE ESTAR AQUI DENTRO
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
     if senha == "1234":
+        st.write("Acesso liberado! Aqui virão os botões de gestão.")
         with st.expander("🏷️ Aplicar Desconto em Produto"):
                 selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
                 cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
