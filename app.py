@@ -178,20 +178,27 @@ with aba3:
                     st.success("Reposição feita!")
                     st.rerun()
 
-            # --- BLOCO 4: CADASTRO ---
-            with st.expander("➕ Cadastro de Novo Produto"):
-                with st.form("form_cadastro"):
-                    cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
-                    nome_prod = st.text_input("Nome:")
-                    marca = st.text_input("Marca:")
-                    preco = st.number_input("Preço:", 0.0, 1000.0)
-                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
-                    
-                    if st.form_submit_button("Cadastrar Produto"):
-                        codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
-                        novo_codigo = max(codigos) + 1 if codigos else 1
-                        ws.append_row([novo_codigo, cat, nome_prod, marca, nome_prod, preco, 0, estoque_ini])
-                        st.success("Cadastrado!")
-                        st.rerun()
-        except Exception as e:
+           # --- BLOCO 4: CADASTRO CORRIGIDO ---
+           if st.form_submit_button("Cadastrar Produto"):
+           if nome_prod and marca:
+                   codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
+                   novo_codigo = max(codigos) + 1 if codigos else 1
+        
+        # A ORDEM ABAIXO DEVE SER EXATAMENTE A ORDEM DAS COLUNAS A ATÉ I:
+        # A:Codigo, B:Produto, C:Marca, D:Descricao, E:Categoria, F:Preco, G:Custo, H:Desconto, I:Estoque
+        nova_linha = [
+            int(novo_codigo),     # Coluna A
+            str(nome_prod),       # Coluna B
+            str(marca),           # Coluna C
+            str(nome_prod),       # Coluna D (Descrição)
+            str(cat),             # Coluna E
+            float(preco),         # Coluna F
+            0.0,                  # Coluna G (Preco Compra - coloque 0 ou ajuste)
+            0.0,                  # Coluna H (Desconto)
+            int(estoque_ini)      # Coluna I (Estoque)
+        ]
+        
+        ws.append_row(nova_linha)
+        st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
+        st.rerun()        except Exception as e:
             st.error(f"Erro na gestão: {e}")
