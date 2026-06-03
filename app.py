@@ -186,7 +186,7 @@ with aba3:
         
         # A ORDEM ABAIXO DEVE SER EXATAMENTE A ORDEM DAS COLUNAS A ATÉ I:
         # A:Codigo, B:Produto, C:Marca, D:Descricao, E:Categoria, F:Preco, G:Custo, H:Desconto, I:Estoque
-        nova_linha = [
+            nova_linha = [
             int(novo_codigo),     # Coluna A
             str(nome_prod),       # Coluna B
             str(marca),           # Coluna C
