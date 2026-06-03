@@ -238,16 +238,16 @@ with aba3:
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Erro ao salvar novo produto: {e}")
-                # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
+                                
+               # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---                
+               with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
+                    # --- NOVO: Seleção de cliente para o histórico ---
+                    # (Assumindo que você tenha uma lista de clientes ou um input simples)
+                    nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
                 
-                with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
-                     # --- NOVO: Seleção de cliente para o histórico ---
-                     # (Assumindo que você tenha uma lista de clientes ou um input simples)
-                     nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
-                
-                     prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
-                     cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
-                     qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+                    prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+                    cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
+                    qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
                 if st.button("Confirmar Venda"):
                     try:
