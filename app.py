@@ -81,7 +81,7 @@ def load_data(sheet):
 
 df_prod = load_data("Produtos")
 
-st.title("Teste de Execução")
+st.title(" ")
 
 # ABAS
 aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
