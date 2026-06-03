@@ -13,8 +13,46 @@ def limpar_valor(valor):
     except:
         return 0.0
         
-st.set_page_config(page_title="Teste de Funcionamento", layout="wide")
-
+# --- O CSS FICA AQUI, DENTRO DO st.markdown ---
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400&display=swap');
+    
+    .stApp {background-color: #fdfafb;}
+    
+    .header-box {
+        text-align: center; 
+        padding: 40px; 
+        background: linear-gradient(135deg, #d4af37 0%, #fce4ec 50%, #d4af37 100%); 
+        border-radius: 20px; 
+        margin-bottom: 30px;
+        color: #5d4037;
+    }
+    
+    .brand-title {
+        font-family: 'Playfair Display', serif; 
+        font-size: 3.5em; 
+        font-weight: 700; 
+        margin-bottom: 5px;
+    }
+    
+    .slogan {
+        font-family: 'Montserrat', sans-serif;
+        font-style: italic;
+        font-size: 1.2em;
+        letter-spacing: 2px;
+    }
+    
+    .produto-card {
+        background: white; 
+        padding: 20px; 
+        border-radius: 15px; 
+        border-left: 5px solid #d4af37;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+        margin-bottom: 15px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 # CARGA DE DADOS
 def load_data(sheet):
     try:
