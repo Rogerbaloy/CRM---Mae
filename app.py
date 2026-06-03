@@ -190,11 +190,9 @@ with aba3:
                     submit_button = st.form_submit_button("Cadastrar Produto")
                     
                     if submit_button:
-                        # 1. Verificamos primeiro a regra de negócio
                         if not nome_prod or not marca:
                             st.error("Por favor, preencha o Nome e a Marca!")
                         else:
-                            # 2. Só então tentamos salvar (agora o try/except fica limpo)
                             try:
                                 codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                                 novo_codigo = max(codigos) + 1 if codigos else 1
@@ -209,4 +207,4 @@ with aba3:
                                 st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
                                 st.rerun()
                             except Exception as e:
-                                st.error(f"Erro ao salvar na planilha: {e}")
+                                st.error(f"Erro ao salvar: {e}")
