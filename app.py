@@ -299,6 +299,63 @@ with aba3:
                             st.error("Estoque insuficiente!")
                     except Exception as e:
                         st.error(f"Erro ao registrar: {e}")
+                        with aba4:
+    st.subheader("📈 Dashboard de Vendas e Lucro")
+    
+    if st.button("Atualizar Relatório"):
+        try:
+            # Conecta nas abas necessárias
+            # Certifique-se de que a chave da planilha é a mesma que você usa nas outras abas
+            ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+            ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            # Lê os dados
+            df_vendas = pd.DataFrame(ws_vendas.get_all_records())
+            df_prod = pd.DataFrame(ws_prod.get_all_records())
+            
+            # Filtra linhas vazias
+            df_vendas = df_vendas[df_vendas['Produto'] != '']
+            
+            if not df_vendas.empty:
+                # Converte para numérico
+                df_vendas['Preco total'] = pd.to_numeric(df_vendas['Preco total'])
+                df_vendas['Quantidade'] = pd.to_numeric(df_vendas['Quantidade'])
+                
+                # Função para calcular o lucro de cada linha
+                def calcular_lucro(row):
+                    # Pega o nome do produto sem o "Cod X - "
+                    nome_prod_formatado = row['Produto'].split(" - ")[1]
+                    
+                    # Procura este produto na tabela de produtos
+                    match = df_prod[df_prod['Produto'] == nome_prod_formatado]
+                    if not match.empty:
+                        # Pega o preço de compra da coluna 'Preco compra'
+                        custo = float(match.iloc[0]['Preco compra'])
+                        # Calcula: (Preço Venda Unitário - Custo Unitário) * Quantidade
+                        preco_unitario = float(row['Preco total']) / float(row['Quantidade'])
+                        return (preco_unitario - custo) * float(row['Quantidade'])
+                    return 0
+                
+                # Aplica o cálculo
+                df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
+                
+                # Exibe as métricas principais
+                col1, col2 = st.columns(2)
+                col1.metric("Total Vendido", f"R$ {df_vendas['Preco total'].sum():,.2f}")
+                col2.metric("Lucro Total", f"R$ {df_vendas['Lucro Total'].sum():,.2f}")
+                
+                # Gráficos
+                st.write("### Lucro por Cliente")
+                st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
+                
+                st.write("### Produtos Mais Vendidos")
+                st.bar_chart(df_vendas.groupby('Produto')['Quantidade'].sum())
+                
+            else:
+                st.info("Nenhuma venda registrada ainda na planilha de Vendas.")
+                
+        except Exception as e:
+            st.error(f"Erro ao carregar o dashboard: {e}")
                                     
         except Exception as e:
             st.error(f"Erro na conexão: {e}")
