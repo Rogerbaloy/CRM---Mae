@@ -190,29 +190,23 @@ with aba3:
                     submit_button = st.form_submit_button("Cadastrar Produto")
                     
                     if submit_button:
-                        if nome_prod and marca:
+                        # 1. Verificamos primeiro a regra de negócio
+                        if not nome_prod or not marca:
+                            st.error("Por favor, preencha o Nome e a Marca!")
+                        else:
+                            # 2. Só então tentamos salvar (agora o try/except fica limpo)
                             try:
-                                # Pega o próximo código baseado na planilha atual
                                 codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                                 novo_codigo = max(codigos) + 1 if codigos else 1
                                 
-                                # A ordem da lista deve bater exatamente com as colunas A até I da planilha
                                 nova_linha = [
-                                    int(novo_codigo), # A: Codigo
-                                    str(nome_prod),   # B: Produto
-                                    str(marca),       # C: Marca
-                                    str(nome_prod),   # D: Descricao
-                                    str(cat),         # E: Categoria
-                                    float(preco),     # F: Preco Venda
-                                    0.0,              # G: Preco Compra
-                                    0.0,              # H: Desconto
-                                    int(estoque_ini)  # I: Estoque
+                                    int(novo_codigo), str(nome_prod), str(marca), 
+                                    str(nome_prod), str(cat), float(preco), 
+                                    0.0, 0.0, int(estoque_ini)
                                 ]
                                 
                                 ws.append_row(nova_linha)
                                 st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
                                 st.rerun()
                             except Exception as e:
-                                st.error(f"Erro ao salvar: {e}")
-                            else:
-                                st.error("Por favor, preencha o Nome e a Marca!")
+                                st.error(f"Erro ao salvar na planilha: {e}")
