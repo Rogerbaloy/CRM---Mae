@@ -240,47 +240,37 @@ with aba3:
                                 st.error(f"Erro ao salvar novo produto: {e}")
                 # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
+                # --- NOVO: Seleção de cliente para o histórico ---
+                # (Assumindo que você tenha uma lista de clientes ou um input simples)
+                nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
+                
                 prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
                 cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
                 qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
                 if st.button("Confirmar Venda"):
                     try:
-                        # Busca o produto pelo código na Coluna 1
-                        cell = ws.find(str(cod_venda), in_column=1)
+                        # 1. Conectar na aba Produtos e Vendas
+                        ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+                        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
                         
-                        # Pega o estoque atual na Coluna 9
-                        estoque_atual = int(ws.cell(cell.row, 9).value)
+                        # 2. Atualizar Estoque (Aba Produtos)
+                        cell = ws_prod.find(str(cod_venda), in_column=1)
+                        estoque_atual = int(ws_prod.cell(cell.row, 9).value)
+                        preco_venda = float(ws_prod.cell(cell.row, 6).value) # Coluna 6: Preço
                         
                         if estoque_atual >= qtd_venda:
-                            # Atualiza a Coluna 9 com o novo valor
-                            ws.update_cell(cell.row, 9, estoque_atual - qtd_venda)
-                            st.success(f"Venda registrada! Novo estoque: {estoque_atual - qtd_venda}")
+                            ws_prod.update_cell(cell.row, 9, estoque_atual - qtd_venda)
+                            
+                            # 3. Registrar na aba Vendas
+                            from datetime import datetime
+                            valor_total = preco_venda * qtd_venda
+                            ws_vendas.append_row([str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
+                                                 nome_cliente, prod_venda, qtd_venda, valor_total])
+                            
+                            st.success(f"Venda de {qtd_venda} un. registrada com sucesso!")
                             st.rerun()
                         else:
-                            st.error(f"Estoque insuficiente! Disponível: {estoque_atual}")
+                            st.error("Estoque insuficiente!")
                     except Exception as e:
-                        st.error(f"Erro ao registrar venda: {e}")
-               # --- BLOCO: REPOR ESTOQUE ---
-            with st.expander("➕ Repor Estoque"):
-                prod_repo = st.selectbox("Escolher perfume:", lista_formatada, key="repo_prod")
-                cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
-                qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
-                
-                if st.button("Confirmar Reposição"):
-                    try:
-                        # Busca o produto na Coluna 1
-                        cell = ws.find(str(cod_repo), in_column=1)
-                        # Lê o estoque atual na Coluna 9
-                        estoque_atual = int(ws.cell(cell.row, 9).value)
-                        
-                        # Atualiza a Coluna 9 somando a quantidade
-                        ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
-                        
-                        st.success(f"Reposição feita! Novo estoque: {estoque_atual + qtd_repo}")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Erro na reposição: {e}")
-                        
-        except Exception as e:
-            st.error(f"Erro na gestão: {e}")
+                        st.error(f"Erro ao registrar: {e}")
