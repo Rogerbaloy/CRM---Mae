@@ -103,7 +103,7 @@ with aba3:
             # ... (seu código de conexão e criação do df_atualizado) ...
             # Certifique-se de que a lista_formatada seja criada AQUI DENTRO:
             lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
-        with st.expander("🏷️ Aplicar Desconto em Produto"):
+         with st.expander("🏷️ Aplicar Desconto em Produto"):
                 selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
                 cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
                 desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
