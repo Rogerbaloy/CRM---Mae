@@ -180,7 +180,7 @@ with aba3:
 
            # --- BLOCO 4: CADASTRO CORRIGIDO ---
                 if st.form_submit_button("Cadastrar Produto"):
-                if nome_prod and marca:
+                 if nome_prod and marca:
                    codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                    novo_codigo = max(codigos) + 1 if codigos else 1
         
