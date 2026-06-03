@@ -175,7 +175,7 @@ with aba3:
     
     if senha == "1234":
         try:
-            # 1. Configuração inicial
+            # Conexão (Esta parte deve estar correta)
             import gspread
             from oauth2client.service_account import ServiceAccountCredentials
             
@@ -185,57 +185,16 @@ with aba3:
             client = gspread.authorize(creds)
             ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
             
-            # 2. DEFINIÇÃO DA VARIÁVEL (Aqui ela é criada)
+            # Carregar dados
             dados_produtos = ws.get_all_records()
             df_atualizado = pd.DataFrame(dados_produtos)
             df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
-            
-            # 3. CRIAÇÃO DA LISTA (Agora ela tem acesso ao df_atualizado)
             lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
             
-            st.success("Conectado! Planilha carregada.")
+            st.success("Conectado à planilha!")
             
-            # 4. AQUI VOCÊ PODE COLOCAR SEUS EXPANDERS (Desconto, etc)
-            with st.expander("🏷️ Aplicar Desconto em Produto"):
-                selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
-                cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
-                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
-                
-                if st.button("Confirmar Desconto"):
-                    # Busca o produto pelo código na Coluna 1
-                    cell = ws.find(str(cod_extraido), in_column=1)
-                    
-                    # Atualiza a Coluna 8 (Desconto)
-                    ws.update_cell(cell.row, 8, desc_sel)
-                    
-                    st.success(f"Desconto de {desc_sel}% aplicado!")
-                    st.rerun()
-            # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
-            with st.expander("➕ Cadastro de Novo Produto"):
-                with st.form("form_cadastro_novo"):
-                    cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
-                    nome_prod = st.text_input("Nome/Descrição do Produto:")
-                    marca = st.text_input("Marca:")
-                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
-                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
-                    
-                    submit_novo = st.form_submit_button("Cadastrar Produto")
-                    
-                    if submit_novo:
-                        if not nome_prod or not marca:
-                            st.error("Por favor, preencha o Nome e a Marca!")
-                        else:
-                            try:
-                                # Define um novo código baseando-se no maior código existente
-                                codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
-                                novo_codigo = max(codigos) + 1 if codigos else 1
-                                
-                                # Prepara a linha (ajuste a ordem conforme suas colunas: Cod, Prod, Marca, Desc, Cat, PrecoV, PrecoC, Desc, Estoque)
-                                nova_linha = [novo_codigo, nome_prod, marca, nome_prod, cat, preco, 0.0, 0.0, estoque_ini]
-                                
-                                ws.append_row(nova_linha)
-                                st.success(f"Produto {nome_prod} cadastrado com sucesso!")
-                                st.rerun()
-                            except Exception as e:
-                                st.error(f"Erro ao salvar novo produto: {e}")
-                                
+            # Aqui é onde o seu código deve estar para evitar erros de fechamento
+            st.write("Sistema pronto para gestão.")
+
+        except Exception as e:
+            st.error(f"Erro na conexão: {e}")
