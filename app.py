@@ -200,5 +200,5 @@ with aba3:
         
             ws.append_row(nova_linha)
             st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
-            st.rerun()        except Exception as e:
-            st.error(f"Erro na gestão: {e}")
+             st.rerun()        except Exception as e:
+             st.error(f"Erro na gestão: {e}")
