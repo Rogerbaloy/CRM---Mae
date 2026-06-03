@@ -172,8 +172,8 @@ with aba2:
 with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
-
-    with aba4:
+    
+with aba4:
     st.subheader("📈 Dashboard de Vendas e Lucro")
     
     if st.button("Atualizar Relatório"):
