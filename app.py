@@ -90,6 +90,8 @@ with aba2:
         # E a ação acontece se o botão for clicado
         if submit:
             st.success(f"Cliente {nome} cadastrado com sucesso!")
+
+        
         with aba3:
             st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
