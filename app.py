@@ -94,15 +94,15 @@ with aba2:
         
 with aba3:
     st.subheader("🔐 Painel Exclusivo da Mi")
-    # A SENHA DEVE ESTAR AQUI DENTRO
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
     if senha == "1234":
-        st.write("Acesso liberado! Aqui virão os botões de gestão.")
         try:
             # ... (seu código de conexão e criação do df_atualizado) ...
             # Certifique-se de que a lista_formatada seja criada AQUI DENTRO:
             lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
+            
+            # AGORA, o expansor pode acessar a lista pois está no mesmo nível de indentação
             with st.expander("🏷️ Aplicar Desconto em Produto"):
                 selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
                 cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
@@ -113,29 +113,6 @@ with aba3:
                     ws.update_cell(cell.row, 7, desc_sel)
                     st.success(f"Desconto aplicado ao produto {selecionado}!")
                     st.rerun()
-        try:
-            import gspread
-            from oauth2client.service_account import ServiceAccountCredentials
-            
-            # Conexão com Google Sheets
-            secrets = st.secrets["gcp_service_account"]
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
-            client = gspread.authorize(creds)
-            ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-            
-            # Carregar dados
-            dados_produtos = ws.get_all_records()
-            df_atualizado = pd.DataFrame(dados_produtos)
-            df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
-            
-            st.success("Conectado à planilha!")
-            
-            # Lista para os selects de gestão
-            lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
-            
-            # --- AGORA PODEMOS ADICIONAR OS BLOCOS ABAIXO ---
-            st.write("Escolha uma das opções abaixo para gerenciar seu estoque:")
-            
+
         except Exception as e:
-            st.error(f"Erro ao conectar: {e}")
+            st.error(f"Erro na gestão: {e}")
