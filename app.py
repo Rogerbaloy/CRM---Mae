@@ -54,13 +54,14 @@ st.markdown("""
         margin-bottom: 15px;
     }
     </style>
-""", unsafe_allow_html=True)
+    /* Adicione isso dentro do seu bloco <style> */
 .block-container {
-     padding-top: 1rem !important;
-     padding-bottom: 1rem !important;
-     padding-left: 1rem !important;
-     padding-right: 1rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
+""", unsafe_allow_html=True)
 
 # Cabeçalho aplicado
 st.markdown("""
