@@ -16,6 +16,13 @@ def limpar_valor(valor):
 # CSS Feminino, Clean e Mobile-Friendly
 st.markdown("""
     <style>
+    /* Adicione isso dentro do seu bloco <style> */
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400&display=swap');
     
     /* Fundo suave */
@@ -54,13 +61,7 @@ st.markdown("""
         margin-bottom: 15px;
     }
     </style>
-    .block-container {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-}
-""", unsafe_allow_html=True)
+  """, unsafe_allow_html=True)
 
 # Cabeçalho aplicado
 st.markdown("""
