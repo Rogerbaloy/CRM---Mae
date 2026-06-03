@@ -65,8 +65,8 @@ with aba1:
             # Preço e Desconto seguro
             with c2:
             # Usa a função para limpar Preço e Desconto
-            preco_base = limpar_valor(row['Preco Venda'])
-            desc = limpar_valor(row['Desconto'])
+             preco_base = limpar_valor(row['Preco Venda'])
+             desc = limpar_valor(row['Desconto'])
                 
             preco_final = preco_base * (1 - desc/100)
             
