@@ -1,5 +1,15 @@
 import streamlit as st
 import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
+
+# --- CONEXÃO GLOBAL (FORA DE QUALQUER IF OU ABA) ---
+secrets = st.secrets["gcp_service_account"]
+scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+client = gspread.authorize(creds) # Agora o 'client' vive aqui e qualquer aba pode usar!
+
 def limpar_valor(valor):
     if pd.isna(valor) or valor == '':
         return 0.0
