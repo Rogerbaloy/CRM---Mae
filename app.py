@@ -198,7 +198,7 @@ with aba3:
             int(estoque_ini)      # Coluna I (Estoque)
         ]
         
-        ws.append_row(nova_linha)
-        st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
-        st.rerun()        except Exception as e:
+            ws.append_row(nova_linha)
+            st.success(f"Produto {nome_prod} cadastrado! (Código: {novo_codigo})")
+            st.rerun()        except Exception as e:
             st.error(f"Erro na gestão: {e}")
