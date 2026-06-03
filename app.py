@@ -182,6 +182,29 @@ with aba3:
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Erro ao salvar novo produto: {e}")
+                # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
+            with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
+                prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+                cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
+                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
+                if st.button("Confirmar Venda"):
+                    try:
+                        # Busca o produto pelo código na Coluna 1
+                        cell = ws.find(str(cod_venda), in_column=1)
+                        
+                        # Pega o estoque atual na Coluna 9
+                        estoque_atual = int(ws.cell(cell.row, 9).value)
+                        
+                        if estoque_atual >= qtd_venda:
+                            # Atualiza a Coluna 9 com o novo valor
+                            ws.update_cell(cell.row, 9, estoque_atual - qtd_venda)
+                            st.success(f"Venda registrada! Novo estoque: {estoque_atual - qtd_venda}")
+                            st.rerun()
+                        else:
+                            st.error(f"Estoque insuficiente! Disponível: {estoque_atual}")
+                    except Exception as e:
+                        st.error(f"Erro ao registrar venda: {e}")
+                        
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
