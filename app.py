@@ -300,7 +300,7 @@ with aba3:
                     except Exception as e:
                         st.error(f"Erro ao registrar: {e}")
                         # --- ABA 4: RELATÓRIOS E DASHBOARD ---
-with tab4:
+    with tab4:
     st.subheader("📈 Dashboard de Vendas e Lucro")
     if st.button("Atualizar Relatório"):
         try:
