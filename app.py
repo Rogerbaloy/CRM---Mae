@@ -77,12 +77,17 @@ with aba1:
 
 with aba2:
     st.subheader("👤 Cadastro de Clientes")
+    # O "with" abre o formulário
     with st.form("form_cliente"):
         nome = st.text_input("Nome:")
         cpf = st.text_input("CPF:")
         tel = st.text_input("Telefone:")
         
-    if st.form_submit_button("Cadastrar Cliente"):
+        # O botão TEM que estar alinhado dentro do "with" acima
+        submit = st.form_submit_button("Cadastrar Cliente")
+        
+        # E a ação acontece se o botão for clicado
+        if submit:
             st.success(f"Cliente {nome} cadastrado com sucesso!")
     with aba3:
             st.subheader("🔐 Painel Exclusivo da Mi")
