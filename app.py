@@ -82,9 +82,9 @@ with aba2:
         cpf = st.text_input("CPF:")
         tel = st.text_input("Telefone:")
         
-        if st.form_submit_button("Cadastrar Cliente"):
+    if st.form_submit_button("Cadastrar Cliente"):
             st.success(f"Cliente {nome} cadastrado com sucesso!")
-            with aba3:
+        with aba3:
             st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
