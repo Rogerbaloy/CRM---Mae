@@ -54,8 +54,7 @@ st.markdown("""
         margin-bottom: 15px;
     }
     </style>
-    /* Adicione isso dentro do seu bloco <style> */
-.block-container {
+    .block-container {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
     padding-left: 1rem !important;
