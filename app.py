@@ -179,7 +179,7 @@ with aba3:
                     st.rerun()
 
        
-            # --- BLOCO 4: CADASTRO COM FECHAMENTO EXPLICITO ---
+            # --- BLOCO 4: CADASTRO 100% SEGURO E SIMPLIFICADO ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
@@ -203,6 +203,3 @@ with aba3:
                                 st.rerun()
                             except Exception as e:
                                 st.error(f"Erro ao salvar: {e}")
-            
-            # ATENÇÃO: NENHUMA LINHA DE CÓDIGO DEVE FICAR ABAIXO DISSO 
-            # COM O MESMO RECUO DO 'with' DO EXPANDER.
