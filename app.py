@@ -98,21 +98,30 @@ with aba3:
     
     if senha == "1234":
         try:
-            # ... (seu código de conexão e criação do df_atualizado) ...
-            # Certifique-se de que a lista_formatada seja criada AQUI DENTRO:
+            # 1. Configuração inicial
+            import gspread
+            from oauth2client.service_account import ServiceAccountCredentials
+            
+            secrets = st.secrets["gcp_service_account"]
+            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+            client = gspread.authorize(creds)
+            ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            # 2. DEFINIÇÃO DA VARIÁVEL (Aqui ela é criada)
+            dados_produtos = ws.get_all_records()
+            df_atualizado = pd.DataFrame(dados_produtos)
+            df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
+            
+            # 3. CRIAÇÃO DA LISTA (Agora ela tem acesso ao df_atualizado)
             lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
             
-            # AGORA, o expansor pode acessar a lista pois está no mesmo nível de indentação
+            st.success("Conectado! Planilha carregada.")
+            
+            # 4. AQUI VOCÊ PODE COLOCAR SEUS EXPANDERS (Desconto, etc)
             with st.expander("🏷️ Aplicar Desconto em Produto"):
                 selecionado = st.selectbox("Escolha o produto:", lista_formatada, key="desc_prod")
-                cod_extraido = int(selecionado.split(" - ")[0].replace("Cod ", ""))
-                desc_sel = st.number_input("Novo Desconto (%)", 0, 100, key="desc_val")
+                # ... resto do código ...
                 
-                if st.button("Confirmar Desconto"):
-                    cell = ws.find(str(cod_extraido), in_column=1)
-                    ws.update_cell(cell.row, 7, desc_sel)
-                    st.success(f"Desconto aplicado ao produto {selecionado}!")
-                    st.rerun()
-
         except Exception as e:
             st.error(f"Erro na gestão: {e}")
