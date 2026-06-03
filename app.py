@@ -84,7 +84,7 @@ df_prod = load_data("Produtos")
 st.title("Teste de Execução")
 
 # ABAS
-aba1, aba2, aba3 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão (Mãe)"])
+tab1, tab2, tab3, tab4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
 
 with aba1:
     # 1. Filtro
@@ -299,6 +299,40 @@ with aba3:
                             st.error("Estoque insuficiente!")
                     except Exception as e:
                         st.error(f"Erro ao registrar: {e}")
+
+              # --- ABA 4: RELATÓRIOS E DASHBOARD ---
+with tab4:
+    st.subheader("📈 Dashboard de Vendas e Lucro")
+    if st.button("Atualizar Relatório"):
+        try:
+            ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+            ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            df_vendas = pd.DataFrame(ws_vendas.get_all_records())
+            df_prod = pd.DataFrame(ws_prod.get_all_records())
+            
+            if not df_vendas.empty:
+                df_vendas['Preco total'] = pd.to_numeric(df_vendas['Preco total'])
+                
+                def calcular_lucro(row):
+                    nome_prod = row['Produto'].split(" - ")[1] # Ajuste conforme o formato do nome
+                    match = df_prod[df_prod['Produto'] == nome_prod]
+                    if not match.empty:
+                        custo = float(match.iloc[0]['Preco compra'])
+                        lucro_unitario = (float(row['Preco total']) / float(row['Quantidade'])) - custo
+                        return lucro_unitario * float(row['Quantidade'])
+                    return 0
+                
+                df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
+                
+                col1, col2 = st.columns(2)
+                col1.metric("Total Vendido", f"R$ {df_vendas['Preco total'].sum():,.2f}")
+                col2.metric("Lucro Total", f"R$ {df_vendas['Lucro Total'].sum():,.2f}")
+                st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
+            else:
+                st.info("Nenhuma venda registrada ainda.")
+        except Exception as e:
+            st.error(f"Erro ao carregar relatório: {e}")
 
         except Exception as e:
             st.error(f"Erro na conexão: {e}")
