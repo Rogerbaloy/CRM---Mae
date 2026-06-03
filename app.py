@@ -55,6 +55,12 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
 
 # Cabeçalho aplicado
 st.markdown("""
