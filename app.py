@@ -39,8 +39,14 @@ with aba1:
             st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
             st.write(f"**Descrição:** {row['Descricao']}")
             
-            # Estoque seguro
-            estoque_val = int(row['Estoque']) if pd.notna(row['Estoque']) else 0
+            # Estoque seguro - Substitua a linha 43 por este bloco:
+            estoque_raw = row['Estoque']
+            try:
+                # Primeiro converte para float (para lidar com 5.0) e depois para int
+                estoque_val = int(float(estoque_raw))
+            except (ValueError, TypeError):
+                # Se for vazio, texto ou qualquer erro, assume 0
+                estoque_val = 0
             st.write(f"**Estoque:** {estoque_val}")
             
         with c2:
