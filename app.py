@@ -18,7 +18,62 @@ st.title("Teste de Execução")
 aba1, aba2 = st.tabs(["🛍️ Catálogo", "👤 Clientes"])
 
 with aba1:
-    st.write("Catálogo funcionando")
+    # 1. Filtro
+    filtro = st.selectbox("Filtrar por Categoria:", ["Todos", "Masculino", "Feminino", "Infantil", "Outros"])
+    df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
+    
+    # 2. Inicialização do Carrinho
+    if 'carrinho' not in st.session_state:
+        st.session_state.carrinho = []
+
+    # 3. Exibição dos Produtos
+    for idx, row in df_f.iterrows():
+        if pd.isna(row['Produto']): continue
+        
+        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
+        c1, c2 = st.columns([3, 1])
+        
+        with c1:
+            codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else 0
+            st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
+            st.write(f"**Descrição:** {row['Descricao']}")
+            
+            # Estoque seguro
+            estoque_val = int(row['Estoque']) if pd.notna(row['Estoque']) else 0
+            st.write(f"**Estoque:** {estoque_val}")
+            
+        with c2:
+            # Preço e Desconto seguro
+            preco_base = float(row['Preco Venda']) if pd.notna(row['Preco Venda']) else 0.0
+            desc = float(row['Desconto']) if pd.notna(row['Desconto']) else 0.0
+            preco_final = preco_base * (1 - desc/100)
+            
+            if desc > 0:
+                st.write(f"~~R$ {preco_base:.2f}~~")
+                st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
+            else:
+                st.write(f"### R$ {preco_final:.2f}")
+                
+            qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
+            if st.button("🛒 Adicionar", key=f"btn_{idx}"):
+                st.session_state.carrinho.append(f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})")
+                st.success("Adicionado!")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # 4. Carrinho
+    if st.session_state.carrinho:
+        st.write("---")
+        st.subheader("🛒 Seu Carrinho")
+        for item in st.session_state.carrinho:
+            st.write(f"- {item}")
+        
+        msg = "Olá! Gostaria de comprar: " + " | ".join(st.session_state.carrinho)
+        st.link_button("Finalizar no WhatsApp", f"https://wa.me/5551997812374?text={msg}")
+        
+        if st.button("Limpar Carrinho"):
+            st.session_state.carrinho = []
+            st.rerun()
 
 with aba2:
     st.write("Clientes funcionando")
