@@ -180,7 +180,6 @@ with aba3:
 
            # --- BLOCO 4: CADASTRO CORRIGIDO ---
             with st.expander("➕ Cadastro de Novo Produto"):
-                # O with st.form é OBRIGATÓRIO aqui
                 with st.form("form_cadastro"):
                     cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
                     nome_prod = st.text_input("Nome/Descrição do Produto:")
@@ -188,25 +187,26 @@ with aba3:
                     preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
                     estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
                     
-                    # O botão DEVE estar dentro do with st.form
                     submit_button = st.form_submit_button("Cadastrar Produto")
                     
                     if submit_button:
                         if nome_prod and marca:
                             try:
+                                # Pega o próximo código baseado na planilha atual
                                 codigos = [int(x) for x in df_atualizado['Codigo'].tolist() if str(x).isdigit()]
                                 novo_codigo = max(codigos) + 1 if codigos else 1
                                 
+                                # A ordem da lista deve bater exatamente com as colunas A até I da planilha
                                 nova_linha = [
-                                    int(novo_codigo), # A
-                                    str(nome_prod),   # B
-                                    str(marca),       # C
-                                    str(nome_prod),   # D
-                                    str(cat),         # E
-                                    float(preco),     # F
-                                    0.0,              # G
-                                    0.0,              # H
-                                    int(estoque_ini)  # I
+                                    int(novo_codigo), # A: Codigo
+                                    str(nome_prod),   # B: Produto
+                                    str(marca),       # C: Marca
+                                    str(nome_prod),   # D: Descricao
+                                    str(cat),         # E: Categoria
+                                    float(preco),     # F: Preco Venda
+                                    0.0,              # G: Preco Compra
+                                    0.0,              # H: Desconto
+                                    int(estoque_ini)  # I: Estoque
                                 ]
                                 
                                 ws.append_row(nova_linha)
