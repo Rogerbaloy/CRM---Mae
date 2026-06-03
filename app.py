@@ -305,7 +305,7 @@ with aba3:
 
 with aba4:
      st.subheader("📈 Dashboard de Vendas e Lucro")
-            if st.button("Atualizar Relatório"):
+     if st.button("Atualizar Relatório"):
                 try:
                     ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
                     ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
