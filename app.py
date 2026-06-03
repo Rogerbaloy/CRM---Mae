@@ -167,6 +167,22 @@ with aba2:
         # E a ação acontece se o botão for clicado
         if submit:
             st.success(f"Cliente {nome} cadastrado com sucesso!")
+    st.subheader("🔍 Consulte suas Compras")
+    cpf_busca = st.text_input("Digite seu CPF (apenas números):")
+    
+    if cpf_busca:
+        # Busca nas vendas pelo CPF (precisaremos da coluna CPF na aba Vendas)
+        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+        df_vendas = pd.DataFrame(ws_vendas.get_all_records())
+        
+        # Filtra pelo CPF
+        compras_cliente = df_vendas[df_vendas['CPF'] == cpf_busca]
+        
+        if not compras_cliente.empty:
+            st.success(f"Encontramos {len(compras_cliente)} compra(s)!")
+            st.table(compras_cliente[['Data', 'Produto', 'Preco total']])
+        else:
+            st.warning("Nenhuma compra encontrada para este CPF.")         
 
         
 with aba3:
