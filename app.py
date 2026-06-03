@@ -63,15 +63,18 @@ with aba1:
             
         with c2:
             # Preço e Desconto seguro
-            preco_base = float(row['Preco Venda']) if pd.notna(row['Preco Venda']) else 0.0
-            desc = float(row['Desconto']) if pd.notna(row['Desconto']) else 0.0
+            with c2:
+            # Usa a função para limpar Preço e Desconto
+            preco_base = limpar_valor(row['Preco Venda'])
+            desc = limpar_valor(row['Desconto'])
+                
             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
                 st.write(f"~~R$ {preco_base:.2f}~~")
                 st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
             else:
-                st.write(f"### R$ {preco_final:.2f}")
+                st.write(f"### R$ {preco_base:.2f}")
                 
             qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
             if st.button("🛒 Adicionar", key=f"btn_{idx}"):
