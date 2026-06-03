@@ -1,6 +1,18 @@
 import streamlit as st
 import pandas as pd
-
+def limpar_valor(valor):
+    if pd.isna(valor) or valor == '':
+        return 0.0
+    # Se já for número, retorna ele mesmo
+    if isinstance(valor, (int, float)):
+        return float(valor)
+    # Se for string (ex: "99,99"), troca vírgula por ponto
+    valor = str(valor).replace(',', '.')
+    try:
+        return float(valor)
+    except:
+        return 0.0
+        
 st.set_page_config(page_title="Teste de Funcionamento", layout="wide")
 
 # CARGA DE DADOS
