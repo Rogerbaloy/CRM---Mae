@@ -201,5 +201,6 @@ with aba3:
                                 ws.append_row(nova_linha)
                                 st.success(f"Produto {nome_prod} cadastrado!")
                                 st.rerun()
-                            except Exception as e:
+                            except 
+                            Exception as e:
                                 st.error(f"Erro ao salvar: {e}")
