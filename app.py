@@ -85,7 +85,7 @@ with aba2:
         if st.form_submit_button("Cadastrar Cliente"):
             st.success(f"Cliente {nome} cadastrado com sucesso!")
             with aba3:
-    st.subheader("🔐 Painel Exclusivo da Mi")
+            st.subheader("🔐 Painel Exclusivo da Mi")
     senha = st.text_input("Senha", type="password", key="senha_admin")
     
     if senha == "1234":
