@@ -196,6 +196,35 @@ with aba3:
             # Aqui é onde o seu código deve estar para evitar erros de fechamento
             st.write("Sistema pronto para gestão.")
 
+            # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
+            with st.expander("➕ Cadastro de Novo Produto"):
+                with st.form("form_cadastro_novo"):
+                    cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
+                    nome_prod = st.text_input("Nome/Descrição do Produto:")
+                    marca = st.text_input("Marca:")
+                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+                    
+                    submit_novo = st.form_submit_button("Cadastrar Produto")
+                    
+                    if submit_novo:
+                        if not nome_prod or not marca:
+                            st.error("Por favor, preencha o Nome e a Marca!")
+                        else:
+                            try:
+                                # Define um novo código baseando-se no maior código existente
+                                codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
+                                novo_codigo = max(codigos) + 1 if codigos else 1
+                                
+                                # Prepara a linha (ajuste a ordem conforme suas colunas: Cod, Prod, Marca, Desc, Cat, PrecoV, PrecoC, Desc, Estoque)
+                                nova_linha = [novo_codigo, nome_prod, marca, nome_prod, cat, preco, 0.0, 0.0, estoque_ini]
+                                
+                                ws.append_row(nova_linha)
+                                st.success(f"Produto {nome_prod} cadastrado com sucesso!")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Erro ao salvar novo produto: {e}")
+
             # --- BLOCO: REPOR ESTOQUE ---
             with st.expander("➕ Repor Estoque"):
                 prod_repo = st.selectbox("Escolher perfume:", lista_formatada, key="repo_prod")
