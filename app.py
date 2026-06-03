@@ -249,7 +249,7 @@ with aba3:
                      cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
                      qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
-                   if st.button("Confirmar Venda"):
+                if st.button("Confirmar Venda"):
                     try:
                         # 1. Conectar na aba Produtos e Vendas
                         ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
