@@ -294,6 +294,9 @@ with aba3:
                 # --- NOVO: Seleção de cliente para o histórico ---
                 # (Assumindo que você tenha uma lista de clientes ou um input simples)
                 nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
+
+                ADICIONE O INPUT DO CPF AQUI
+                cpf_cliente = st.text_input("CPF do Cliente (para consulta no portal):")
                 
                 prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
                 cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
