@@ -391,9 +391,9 @@ with aba3:
             # --- ADICIONE O INPUT DO CPF AQUI
             cpf_cliente = st.text_input("CPF do Cliente (para consulta no portal):")
                 
-                prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
-                cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
-                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+            prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+            cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
+            qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
                 
                 if st.button("Confirmar Venda"):
                     try:
