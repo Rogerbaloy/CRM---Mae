@@ -314,56 +314,103 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
         
-    # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
-    with st.expander("➕ Cadastro de Novo Produto"):
-            with st.form("form_cadastro_novo"):
-                cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
-                subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):")
-                nome_prod = st.text_input("Nome/Descrição do Produto:")
-                marca = st.text_input("Marca:")
-                descricao = st.text_input("Descrição detalhada:") 
-                preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
-                preco_compra = st.number_input("Preco compra:", 0.0, 1000.0)
-                desconto = st.number_input("Desconto (0 se não houver):", 0.0, 100.0)
-                estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
-                
-                submit_novo = st.form_submit_button("Cadastrar Produto")
-                
-                if submit_novo:
-                    if not nome_prod or not marca:
-                        st.error("Por favor, preencha o Nome e a Marca!")
-                    else:
-                        try:
-                            codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
-                            novo_codigo = max(codigos) + 1 if codigos else 1
-                            nova_linha = [novo_codigo, nome_prod, marca, descricao, cat, preco, preco_compra, desconto, estoque_ini, subcat]
-                            ws.append_row(nova_linha)
-                            st.success(f"Produto {nome_prod} cadastrado com sucesso!")
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Erro ao salvar: {e}")
-                            
-        # --- BLOCO: REPOR ESTOQUE ---
-        with st.expander("➕ Repor Estoque"):
-            try:
+    with aba3:
+    st.subheader("🔐 Painel Exclusivo da Mi")
+    senha = st.text_input("Senha", type="password", key="senha_admin")
+    
+    if senha == "1234":
+        try:
+            # Conexão (Esta parte deve estar correta)
+            import gspread
+            from oauth2client.service_account import ServiceAccountCredentials
+            
+            secrets = st.secrets["gcp_service_account"]
+            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
+            client = gspread.authorize(creds)
+            ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+            
+            # Carregar dados
+            dados_produtos = ws.get_all_records()
+            df_atualizado = pd.DataFrame(dados_produtos)
+            df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
+            lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
+            
+            st.success("Conectado à planilha!")
+
+            # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
+            with st.expander("➕ Cadastro de Novo Produto"):
+                with st.form("form_cadastro_novo"):
+                    cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
+                    subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):")
+                    nome_prod = st.text_input("Nome/Descrição do Produto:")
+                    marca = st.text_input("Marca:")
+                    descricao = st.text_input("Descrição detalhada:") 
+                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                    preco_compra = st.number_input("Preco compra:", 0.0, 1000.0)
+                    desconto = st.number_input("Desconto (0 se não houver):", 0.0, 100.0)
+                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+                    
+                    submit_novo = st.form_submit_button("Cadastrar Produto")
+                    
+                    if submit_novo:
+                        if not nome_prod or not marca:
+                            st.error("Por favor, preencha o Nome e a Marca!")
+                        else:
+                            try:
+                                codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
+                                novo_codigo = max(codigos) + 1 if codigos else 1
+                                nova_linha = [novo_codigo, nome_prod, marca, descricao, cat, preco, preco_compra, desconto, estoque_ini, subcat]
+                                ws.append_row(nova_linha)
+                                st.success(f"Produto {nome_prod} cadastrado com sucesso!")
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Erro ao salvar: {e}")
+
+            # --- BLOCO: REPOR ESTOQUE ---
+            with st.expander("➕ Repor Estoque"):
                 prod_repo = st.selectbox("Escolher produto:", lista_formatada, key="repo_prod")
                 cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
                 qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
                 
                 if st.button("Confirmar Reposição"):
-                    cell = ws.find(str(cod_repo), in_column=1)
-                    estoque_atual = int(ws.cell(cell.row, 9).value)
-                    ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
-                    st.success("Reposição feita!")
-                    st.rerun()
-            except Exception as e:
-                st.error(f"Erro na reposição: {e}")
-                           
-            # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
+                    try:
+                        cell = ws.find(str(cod_repo), in_column=1)
+                        estoque_atual = int(ws.cell(cell.row, 9).value)
+                        ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
+                        st.success("Reposição feita!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Erro na reposição: {e}")
+
+            # --- BLOCO: REGISTRAR VENDA ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
-                # --- NOVO: Seleção de cliente para o histórico ---
-                # (Assumindo que você tenha uma lista de clientes ou um input simples)
                 nome_cliente = st.text_input("Nome do Cliente (opcional):", "Avulso")
+                cpf_cliente = st.text_input("CPF do Cliente:")
+                prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
+                cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
+                qtd_venda = st.number_input("Quantidade Vendida:", 1, 100, key="venda_qtd")
+                
+                if st.button("Confirmar Venda"):
+                    try:
+                        ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
+                        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+                        
+                        cell = ws_prod.find(str(cod_venda), in_column=1)
+                        estoque_atual = int(ws_prod.cell(cell.row, 9).value)
+                        preco_venda = float(ws_prod.cell(cell.row, 6).value) 
+                        
+                        if estoque_atual >= qtd_venda:
+                            ws_prod.update_cell(cell.row, 9, estoque_atual - qtd_venda)
+                            ws_vendas.append_row([str(datetime.now().strftime("%d/%m/%Y %H:%M")), nome_cliente, prod_venda, qtd_venda, preco_venda * qtd_venda, cpf_cliente])
+                            st.success("Venda registrada!")
+                            st.rerun()
+                        else:
+                            st.error("Estoque insuficiente!")
+                    except Exception as e:
+                        st.error(f"Erro ao registrar: {e}")
+        except Exception as e:
+            st.error(f"Erro na conexão com planilha: {e}")
 
             # --- ADICIONE O INPUT DO CPF AQUI
                 cpf_cliente = st.text_input("CPF do Cliente (para consulta no portal):")
