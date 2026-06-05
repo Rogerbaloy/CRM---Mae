@@ -364,9 +364,7 @@ with st.expander("➕ Repor Estoque"):
                 
                 st.success(f"Reposição feita! Novo estoque: {estoque_atual + qtd_repo}")
                 st.rerun()
-            except Exception as e:
-                st.error(f"Erro na reposição: {e}")
-    except Exception as e:
+               except Exception as e:
         st.error(f"Erro na reposição: {e}")
                            
             # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
