@@ -96,32 +96,32 @@ st.title(" ")
 # ABAS
 aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
 
-with aba1:
-    # 1. Filtro
-    filtro = st.selectbox("Filtrar por Categoria:", ["Todos", "Masculino", "Feminino", "Infantil", "Outros"])
-    df_f = df_prod if filtro == "Todos" else df_prod[df_prod['Categoria'] == filtro]
+with tab1:
+    st.subheader("🛍️ Nosso Catálogo")
     
-    # 2. Inicialização do Carrinho
-    if 'carrinho' not in st.session_state:
-        st.session_state.carrinho = []
-
-    # 3. Exibição dos Produtos
-    for idx, row in df_f.iterrows():
-        if pd.isna(row['Produto']): continue
+    # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
+    # Certifique-se de que o 'df_prod' está carregado
+    
+    # Criamos 3 colunas para os produtos ficarem lado a lado
+    cols = st.columns(3)
+    
+    # Iteramos sobre os produtos (exemplo de lógica)
+    for i, row in df_prod.iterrows():
+        # Usamos o resto da divisão por 3 para alternar as colunas
+        col = cols[i % 3]
         
-        st.markdown('<div class="produto-card">', unsafe_allow_html=True)
-        c1, c2 = st.columns([3, 1])
-        
-        with c1:
-            codigo = int(row['Codigo']) if pd.notna(row['Codigo']) else 0
-            st.subheader(f"{row['Marca']} - cod {codigo} {row['Produto']}")
-            st.write(f"**Descrição:** {row['Descricao']}")
-            
-            # Estoque seguro - Substitua a linha 43 por este bloco:
-            estoque_raw = row['Estoque']
-            try:
-                # Primeiro converte para float (para lidar com 5.0) e depois para int
-                estoque_val = int(float(estoque_raw))
+        with col:
+            # Container do produto (o "Card")
+            with st.container(border=True):
+                st.markdown(f"**{row['Produto']}**")
+                st.write(f"Marca: {row['Marca']}")
+                st.write(f"R$ {float(row['Preco']):,.2f}")
+                
+                # Se tiver estoque, mostra status
+                if int(row['Estoque']) > 0:
+                    st.success("Disponível")
+                else:
+                    st.error("Esgotado")
             except (ValueError, TypeError):
                 # Se for vazio, texto ou qualquer erro, assume 0
                 estoque_val = 0
