@@ -141,9 +141,16 @@ with aba1:
 
     # --- COLOQUE O FILTRO AQUI ---
     if filtro_cat != "Todos":
+        
         df_exibicao = df_prod[df_prod['Categoria'] == filtro_cat]
     else:
-        df_exibicao = df_prod
+        df_exibicao = df_prod.copy()
+
+if categoria_selecionada != "Todos":
+    df_exibicao = df_exibicao[df_exibicao['Categoria'] == categoria_selecionada]
+
+if subcategoria_selecionada != "Todos":
+    df_exibicao = df_exibicao[df_exibicao['Subcategoria'] == subcategoria_selecionada]
     
     # --- AGORA O LOOP USA O 'df_exibicao' ---
     cols = st.columns(3)
