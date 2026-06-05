@@ -156,10 +156,10 @@ with aba1:
         col_atual = cols[i % 3]
         
         with col_atual:
-            with st.container(border=True):
+        with st.container(border=True):
                 
     # --- AGORA O LOOP USA O 'df_exibicao' ---
-        cols = st.columns(3)
+             cols = st.columns(3)
     
     # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
     # Certifique-se de que o 'df_prod' está carregado
