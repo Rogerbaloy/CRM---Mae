@@ -314,30 +314,6 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
         
-    with aba3:
-    st.subheader("🔐 Painel Exclusivo da Mi")
-    senha = st.text_input("Senha", type="password", key="senha_admin")
-    
-    if senha == "1234":
-        try:
-            # Conexão (Esta parte deve estar correta)
-            import gspread
-            from oauth2client.service_account import ServiceAccountCredentials
-            
-            secrets = st.secrets["gcp_service_account"]
-            scope = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(secrets, scope)
-            client = gspread.authorize(creds)
-            ws = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-            
-            # Carregar dados
-            dados_produtos = ws.get_all_records()
-            df_atualizado = pd.DataFrame(dados_produtos)
-            df_atualizado = df_atualizado[df_atualizado['Produto'] != '']
-            lista_formatada = [f"Cod {int(row['Codigo'])} - {row['Produto']}" for _, row in df_atualizado.iterrows()]
-            
-            st.success("Conectado à planilha!")
-
             # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
             with st.expander("➕ Cadastro de Novo Produto"):
                 with st.form("form_cadastro_novo"):
