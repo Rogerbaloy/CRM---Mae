@@ -314,7 +314,7 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
 
-# --- BLOCO: CADASTRO DE NOVO PRODUTO ATUALIZADO ---
+# --- BLOCO: CADASTRO DE NOVO PRODUTO ---
 with st.expander("➕ Cadastro de Novo Produto"):
     with st.form("form_cadastro_novo"):
         cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
@@ -345,29 +345,22 @@ with st.expander("➕ Cadastro de Novo Produto"):
                 except Exception as e:
                     st.error(f"Erro ao salvar novo produto: {e}")
 
-# --- BLOCO: REPOR ESTOQUE (Fora do form de cadastro, mas dentro do expander) ---
+# --- BLOCO: REPOR ESTOQUE (Fora do bloco try anterior) ---
 with st.expander("➕ Repor Estoque"):
-    prod_repo = st.selectbox("Escolher produto:", lista_formatada, key="repo_prod")
-    cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
-    qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
-    
-    if st.button("Confirmar Reposição"):
-        try:
-            # Busca o produto na Coluna 1
+    try:
+        prod_repo = st.selectbox("Escolher produto:", lista_formatada, key="repo_prod")
+        cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
+        qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
+        
+        if st.button("Confirmar Reposição"):
             cell = ws.find(str(cod_repo), in_column=1)
-            # Lê o estoque atual na Coluna 9 (Estoque)
             estoque_atual = int(ws.cell(cell.row, 9).value)
-            
-            # Atualiza a Coluna 9 somando a quantidade
             ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
-            
-            st.success(f"Reposição feita! Novo estoque: {estoque_atual + qtd_repo}")
+            st.success("Reposição feita!")
             st.rerun()
-        except Exception as e:
-            st.error(f"Erro na reposição: {e}")
-               except Exception as e:
-                    st.error(f"Erro ao carregar repsição: {e}")
-            
+    except Exception as e:
+        st.error(f"Erro na reposição: {e}")
+                           
             # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
                 # --- NOVO: Seleção de cliente para o histórico ---
