@@ -389,7 +389,7 @@ with aba3:
             st.error(f"Erro na conexão com planilha: {e}")
 
             # --- ADICIONE O INPUT DO CPF AQUI
-                cpf_cliente = st.text_input("CPF do Cliente (para consulta no portal):")
+            cpf_cliente = st.text_input("CPF do Cliente (para consulta no portal):")
                 
                 prod_venda = st.selectbox("Produto Vendido:", lista_formatada, key="venda_prod")
                 cod_venda = int(prod_venda.split(" - ")[0].replace("Cod ", ""))
