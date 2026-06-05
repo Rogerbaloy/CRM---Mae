@@ -149,7 +149,7 @@ with aba1:
     cols = st.columns(3)
     
     # O enumerate nos dá o índice 'i' e a linha 'row'
-    for i, row in df_prod.iterrows():
+    for i, row in df_exibicao.iterrows():
         col_atual = cols[i % 3] # A coluna atual (0, 1 ou 2)
         
         with col_atual:
