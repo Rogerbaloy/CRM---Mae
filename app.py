@@ -232,8 +232,8 @@ with aba3:
                     # Busca a linha do produto pelo código na Coluna 1
                     cell = ws.find(str(cod_extraido), in_column=1)
                     
-                    # Atualiza a Coluna 7 (Desconto)
-                    ws.update_cell(cell.row, 7, desc_sel)
+                    # Atualiza a Coluna 8 (Desconto)
+                    ws.update_cell(cell.row, 8, desc_sel)
                     
                     st.success(f"Desconto de {desc_sel}% aplicado ao {selecionado}!")
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
