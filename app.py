@@ -106,44 +106,39 @@ with aba1:
     cols = st.columns(3)
     
     # Iteramos sobre os produtos (exemplo de lógica)
+    cols = st.columns(3)
+    
+    # O enumerate nos dá o índice 'i' e a linha 'row'
     for i, row in df_prod.iterrows():
-        # Usamos o resto da divisão por 3 para alternar as colunas
-        col = cols[i % 3]
+        col_atual = cols[i % 3] # A coluna atual (0, 1 ou 2)
         
-        with col:
-            # Container do produto (o "Card")
+        with col_atual:
             with st.container(border=True):
                 st.markdown(f"**{row['Produto']}**")
                 st.write(f"Marca: {row['Marca']}")
-                st.write(f"R$ {float(row['Preco Venda']):,.2f}")
                 
-                # Se tiver estoque, mostra status
-                if int(row['Estoque']) > 0:
-                    st.success("Disponível")
+                # Cálculo de preço com desconto
+                preco_base = limpar_valor(row['Preco Venda'])
+                desc = limpar_valor(row['Desconto'])
+                preco_final = preco_base * (1 - desc/100)
+                
+                # Exibição de preço
+                if desc > 0:
+                    st.write(f"~~R$ {preco_base:.2f}~~")
+                    st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
                 else:
-                    st.error("Esgotado")
-           
-                estoque_val = 0
-            st.write(f"**Estoque:** {estoque_val}")
-            
-            # Preço e Desconto seguro
-        with col:
-            # Usa a função para limpar Preço e Desconto
-             preco_base = limpar_valor(row['Preco Venda'])
-             desc = limpar_valor(row['Desconto'])
+                    st.write(f"### R$ {preco_base:.2f}")
                 
-             preco_final = preco_base * (1 - desc/100)
-            
-             if desc > 0:
-                st.write(f"~~R$ {preco_base:.2f}~~")
-                st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
-             else:
-                st.write(f"### R$ {preco_base:.2f}")
+                # Estoque e Botão
+                st.write(f"**Estoque:** {row['Estoque']}")
                 
-             qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
-             if st.button("🛒 Adicionar", key=f"btn_{idx}"):
-                st.session_state.carrinho.append(f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})")
-                st.success("Adicionado!")
+                # Botão de compra (usamos o índice 'i' na chave para o Streamlit não se confundir)
+                qtd = st.number_input("Qtd", 1, 99, key=f"q_{i}")
+                if st.button("🛒 Adicionar", key=f"btn_{i}"):
+                    if 'carrinho' not in st.session_state:
+                        st.session_state.carrinho = []
+                    st.session_state.carrinho.append(f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})")
+                    st.success("Adicionado!")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
