@@ -383,6 +383,8 @@ with st.expander("➕ Cadastro de Novo Produto"):
                         st.rerun()
                     except Exception as e:
                         st.error(f"Erro na reposição: {e}")
+               except Exception as e:
+                    st.error(f"Erro ao carregar repsição: {e}")
             
             # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
