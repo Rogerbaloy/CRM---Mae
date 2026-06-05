@@ -9,19 +9,20 @@ if 'carrinho' not in st.session_state:
 import streamlit as st
 
 def set_background(url):
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background: url("{url}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+   st.markdown(
+    """
+    <style>
+    [data-testid="stAppViewContainer"] {
+        background-image: url("LINK_DA_SUA_IMAGEM_AQUI");
+        background-size: cover;
+    }
+    [data-testid="stHeader"] {
+        background: rgba(0,0,0,0);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Use o link da sua foto aqui:
 set_background("https://sl.bing.net/RR3vglg7NI")
@@ -115,6 +116,13 @@ def load_data(sheet):
 df_prod = load_data("Produtos")
 
 st.title(" ")
+
+# Configuração de página para usar toda a largura disponível
+st.set_page_config(layout="wide") 
+
+# Barra lateral para filtros de categoria
+st.sidebar.title("Categorias")
+filtro_cat = st.sidebar.radio("Selecione o que deseja ver:", ["Todos", "Perfumes", "Sapatos", "Óculos"])
 
 # ABAS
 aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
