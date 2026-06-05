@@ -134,14 +134,14 @@ with aba1:
                 
              preco_final = preco_base * (1 - desc/100)
             
-            if desc > 0:
+             if desc > 0:
                 st.write(f"~~R$ {preco_base:.2f}~~")
                 st.markdown(f"### <span style='color:red'>R$ {preco_final:.2f}</span>", unsafe_allow_html=True)
-            else:
+             else:
                 st.write(f"### R$ {preco_base:.2f}")
                 
-            qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
-            if st.button("🛒 Adicionar", key=f"btn_{idx}"):
+             qtd = st.number_input("Qtd", 1, 99, key=f"q_{idx}")
+             if st.button("🛒 Adicionar", key=f"btn_{idx}"):
                 st.session_state.carrinho.append(f"{qtd}x {row['Produto']} (R$ {preco_final:.2f})")
                 st.success("Adicionado!")
         
