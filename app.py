@@ -148,7 +148,7 @@ with aba1:
     if subcategoria_selecionada != "Todos":
         df_exibicao = df_exibicao[df_exibicao['Subcategoria'] == subcategoria_selecionada]
 
-    # 2. Agora que o df_exibicao está pronto, criamos as colunas
+    # 2. Criamos as colunas apenas UMA VEZ
     cols = st.columns(3)
 
     # 3. Fazemos o loop usando o df_exibicao
@@ -157,6 +157,8 @@ with aba1:
         
         with col_atual:
             with st.container(border=True):
+                # O CÓDIGO DO SEU CARD VAI AQUI DENTRO
+                st.markdown(f"**{row['Produto']}**")
                 
        
     # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
