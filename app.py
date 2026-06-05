@@ -127,7 +127,7 @@ with aba1:
             st.write(f"**Estoque:** {estoque_val}")
             
             # Preço e Desconto seguro
-        with col2:
+        with col:
             # Usa a função para limpar Preço e Desconto
              preco_base = limpar_valor(row['Preco Venda'])
              desc = limpar_valor(row['Desconto'])
