@@ -139,19 +139,25 @@ aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Ge
 with aba1:
     st.subheader("🛍️ Nosso Catálogo")
 
-    # --- COLOQUE O FILTRO AQUI ---
-    if filtro_cat != "Todos":
+    # 1. Filtra o dataframe com base nas escolhas da sidebar
+    df_exibicao = df_prod.copy()
+
+    if categoria_selecionada != "Todos":
+        df_exibicao = df_exibicao[df_exibicao['Categoria'] == categoria_selecionada]
+
+    if subcategoria_selecionada != "Todos":
+        df_exibicao = df_exibicao[df_exibicao['Subcategoria'] == subcategoria_selecionada]
+
+    # 2. Agora que o df_exibicao está pronto, criamos as colunas
+    cols = st.columns(3)
+
+    # 3. Fazemos o loop usando o df_exibicao
+    for i, row in df_exibicao.iterrows():
+        col_atual = cols[i % 3]
         
-        df_exibicao = df_prod[df_prod['Categoria'] == filtro_cat]
-    else:
-        df_exibicao = df_prod.copy()
-
-if categoria_selecionada != "Todos":
-    df_exibicao = df_exibicao[df_exibicao['Categoria'] == categoria_selecionada]
-
-if subcategoria_selecionada != "Todos":
-    df_exibicao = df_exibicao[df_exibicao['Subcategoria'] == subcategoria_selecionada]
-    
+        with col_atual:
+            with st.container(border=True):
+                
     # --- AGORA O LOOP USA O 'df_exibicao' ---
     cols = st.columns(3)
     
