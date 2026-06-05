@@ -388,9 +388,19 @@ with aba4:
                         
                         df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
                         
-                        col1, col2 = st.columns(2)
+                        # Coluna 1: Total Vendido
                         col1.metric("Total Vendido", f"R$ {df_vendas['Preco total'].sum():,.2f}")
+                        
+                        # Coluna 2: Lucro Total
                         col2.metric("Lucro Total", f"R$ {df_vendas['Lucro Total'].sum():,.2f}")
+                        
+                        # Coluna 3: Total de Vendas (Quantidade de pedidos)
+                        col3.metric("Nº de Vendas", len(df_vendas))
+                        
+                        st.divider() # Adiciona uma linha horizontal para organizar
+                        
+                        st.subheader("Lucro por Cliente")
+                        st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
                         
                         st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
                     else:
