@@ -306,7 +306,15 @@ with aba3:
                     try:
                         # 1. Conectar na aba Produtos e Vendas
                         ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-                        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+                        # A linha do append_row deve ser esta:
+                        ws_vendas.append_row([
+                        str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
+                        nome_cliente, 
+                        prod_venda, 
+                        qtd_venda, 
+                        valor_total, 
+                        cpf_cliente  # <--- Este é o dado que falta!
+                        ])
                         
                         # 2. Atualizar Estoque (Aba Produtos)
                         cell = ws_prod.find(str(cod_venda), in_column=1)
