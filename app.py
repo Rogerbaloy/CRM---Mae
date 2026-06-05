@@ -159,7 +159,7 @@ with aba1:
             with st.container(border=True):
                 
     # --- AGORA O LOOP USA O 'df_exibicao' ---
-    cols = st.columns(3)
+        cols = st.columns(3)
     
     # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
     # Certifique-se de que o 'df_prod' está carregado
