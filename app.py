@@ -115,7 +115,7 @@ with aba1:
             with st.container(border=True):
                 st.markdown(f"**{row['Produto']}**")
                 st.write(f"Marca: {row['Marca']}")
-                st.write(f"R$ {float(row['Preco']):,.2f}")
+                st.write(f"R$ {float(row['Preco Venda']):,.2f}")
                 
                 # Se tiver estoque, mostra status
                 if int(row['Estoque']) > 0:
