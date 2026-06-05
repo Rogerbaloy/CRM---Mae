@@ -321,6 +321,13 @@ with aba3:
     if senha == "1234":
         # ... (seu código de conexão e lista_formatada continua igual)
         
+        with aba3:
+    st.subheader("🔐 Painel Exclusivo da Mi")
+    senha = st.text_input("Senha", type="password", key="senha_admin")
+    
+    if senha == "1234":
+        # ... (seu código de conexão e lista_formatada continua igual)
+        
         # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
         with st.expander("➕ Cadastro de Novo Produto"):
             with st.form("form_cadastro_novo"):
@@ -347,7 +354,9 @@ with aba3:
                             ws.append_row(nova_linha)
                             st.success(f"Produto {nome_prod} cadastrado com sucesso!")
                             st.rerun()
-                       
+                        except Exception as e:
+                            st.error(f"Erro ao salvar: {e}")
+
         # --- BLOCO: REPOR ESTOQUE ---
         with st.expander("➕ Repor Estoque"):
             try:
@@ -361,9 +370,8 @@ with aba3:
                     ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
                     st.success("Reposição feita!")
                     st.rerun()
-                          
-               except Exception as e:
-        st.error(f"Erro na reposição: {e}")
+            except Exception as e:
+                st.error(f"Erro na reposição: {e}")
                            
             # --- BLOCO: REGISTRAR VENDA (BAIXA DE ESTOQUE) ---
             with st.expander("📉 Registrar Venda (Baixa de Estoque)"):
