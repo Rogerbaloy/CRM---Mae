@@ -1,3 +1,6 @@
+# --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
+if 'carrinho' not in st.session_state:
+    st.session_state.carrinho = []
 import streamlit as st
 import pandas as pd
 import gspread
