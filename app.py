@@ -122,7 +122,6 @@ with tab1:
                     st.success("Disponível")
                 else:
                     st.error("Esgotado")
-                    
            
                 estoque_val = 0
             st.write(f"**Estoque:** {estoque_val}")
