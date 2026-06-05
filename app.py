@@ -126,7 +126,6 @@ with aba1:
                 estoque_val = 0
             st.write(f"**Estoque:** {estoque_val}")
             
-        with c2:
             # Preço e Desconto seguro
             with c2:
             # Usa a função para limpar Preço e Desconto
