@@ -122,6 +122,7 @@ with tab1:
                     st.success("Disponível")
                 else:
                     st.error("Esgotado")
+                    
             except (ValueError, TypeError):
                 # Se for vazio, texto ou qualquer erro, assume 0
                 estoque_val = 0
