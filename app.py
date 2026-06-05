@@ -314,8 +314,8 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
         
-        # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
-        with st.expander("➕ Cadastro de Novo Produto"):
+       # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
+       with st.expander("➕ Cadastro de Novo Produto"):
             with st.form("form_cadastro_novo"):
                 cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
                 subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):")
@@ -342,7 +342,7 @@ with aba3:
                             st.rerun()
                         except Exception as e:
                             st.error(f"Erro ao salvar: {e}")
-
+                            
         # --- BLOCO: REPOR ESTOQUE ---
         with st.expander("➕ Repor Estoque"):
             try:
