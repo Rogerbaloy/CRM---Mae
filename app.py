@@ -6,6 +6,26 @@ from datetime import datetime
 # --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
 if 'carrinho' not in st.session_state:
     st.session_state.carrinho = []
+import streamlit as st
+
+def set_background(url):
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background: url("{url}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Use o link da sua foto aqui:
+set_background("LINK_DA_SUA_FOTO_AQUI")
+
 
 # --- CONEXÃO GLOBAL (FORA DE QUALQUER IF OU ABA) ---
 secrets = st.secrets["gcp_service_account"]
