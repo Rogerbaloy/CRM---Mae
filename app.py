@@ -306,31 +306,34 @@ with aba3:
                     try:
                         # 1. Conectar na aba Produtos e Vendas
                         ws_prod = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Produtos")
-                        # A linha do append_row deve ser esta:
-                        ws_vendas.append_row([
-                        str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                        nome_cliente, 
-                        prod_venda, 
-                        qtd_venda, 
-                        valor_total, 
-                        cpf_cliente  # <--- Este é o dado que falta!
-                        ])
+                        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
                         
-                        # 2. Atualizar Estoque (Aba Produtos)
+                        # 2. Buscar dados do produto
                         cell = ws_prod.find(str(cod_venda), in_column=1)
                         estoque_atual = int(ws_prod.cell(cell.row, 9).value)
-                        preco_venda = float(ws_prod.cell(cell.row, 6).value) # Coluna 6: Preço
+                        preco_venda = float(ws_prod.cell(cell.row, 6).value) 
+                        
+                        # 3. Cálculo do valor (Calculado AQUI para garantir que existe)
+                        valor_total = preco_venda * qtd_venda
                         
                         if estoque_atual >= qtd_venda:
+                            # Atualiza estoque
                             ws_prod.update_cell(cell.row, 9, estoque_atual - qtd_venda)
                             
-                            # 3. Registrar na aba Vendas
+                            # 4. Registrar na aba Vendas
                             from datetime import datetime
-                            valor_total = preco_venda * qtd_venda
-                            ws_vendas.append_row([str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
-                                                 nome_cliente, prod_venda, qtd_venda, valor_total])
                             
-                            st.success(f"Venda de {qtd_venda} un. registrada com sucesso!")
+                            # A lista abaixo deve bater com as colunas da planilha (A até F)
+                            ws_vendas.append_row([
+                                str(datetime.now().strftime("%d/%m/%Y %H:%M")), 
+                                nome_cliente, 
+                                prod_venda, 
+                                qtd_venda, 
+                                valor_total, 
+                                cpf_cliente
+                            ])
+                            
+                            st.success(f"Venda registrada! Valor: R$ {valor_total:.2f}")
                             st.rerun()
                         else:
                             st.error("Estoque insuficiente!")
