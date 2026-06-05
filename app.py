@@ -262,6 +262,7 @@ with aba3:
                     nome_prod = st.text_input("Nome/Descrição do Produto:")
                     marca = st.text_input("Marca:")
                     preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                    preco_compra = st.number_input("Preco compra:",0.0,1000.0)
                     estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
                     
                     submit_novo = st.form_submit_button("Cadastrar Produto")
@@ -276,7 +277,7 @@ with aba3:
                                 novo_codigo = max(codigos) + 1 if codigos else 1
                                 
                                 # Prepara a linha (ajuste a ordem conforme suas colunas: Cod, Prod, Marca, Desc, Cat, PrecoV, PrecoC, Desc, Estoque)
-                                nova_linha = [novo_codigo, nome_prod, marca, nome_prod, cat, preco, 0.0, 0.0, estoque_ini]
+                                nova_linha = [novo_codigo, nome_prod, marca, nome_prod, cat, preco, 0.0, 0.0, preco_compra,0.0, estoque_ini]
                                 
                                 ws.append_row(nova_linha)
                                 st.success(f"Produto {nome_prod} cadastrado com sucesso!")
