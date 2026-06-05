@@ -314,56 +314,58 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
 
-# --- BLOCO: CADASTRO DE NOVO PRODUTO ---
-with st.expander("➕ Cadastro de Novo Produto"):
-    with st.form("form_cadastro_novo"):
-        cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
-        subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):")
-        nome_prod = st.text_input("Nome/Descrição do Produto:")
-        marca = st.text_input("Marca:")
-        descricao = st.text_input("Descrição detalhada:") 
-        preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
-        preco_compra = st.number_input("Preco compra:", 0.0, 1000.0)
-        desconto = st.number_input("Desconto (0 se não houver):", 0.0, 100.0)
-        estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+with aba3:
+    st.subheader("🔐 Painel Exclusivo da Mi")
+    senha = st.text_input("Senha", type="password", key="senha_admin")
+    
+    if senha == "1234":
+        # ... (seu código de conexão e lista_formatada continua igual)
         
-        submit_novo = st.form_submit_button("Cadastrar Produto")
-        
-        if submit_novo:
-            if not nome_prod or not marca:
-                st.error("Por favor, preencha o Nome e a Marca!")
-            else:
-                try:
-                    codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
-                    novo_codigo = max(codigos) + 1 if codigos else 1
-                    
-                    nova_linha = [novo_codigo, nome_prod, marca, descricao, cat, preco, preco_compra, desconto, estoque_ini, subcat]
-                    
-                    ws.append_row(nova_linha)
-                    st.success(f"Produto {nome_prod} cadastrado com sucesso!")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Erro ao salvar novo produto: {e}")
+        # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
+        with st.expander("➕ Cadastro de Novo Produto"):
+            with st.form("form_cadastro_novo"):
+                cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
+                subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):")
+                nome_prod = st.text_input("Nome/Descrição do Produto:")
+                marca = st.text_input("Marca:")
+                descricao = st.text_input("Descrição detalhada:") 
+                preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+                preco_compra = st.number_input("Preco compra:", 0.0, 1000.0)
+                desconto = st.number_input("Desconto (0 se não houver):", 0.0, 100.0)
+                estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+                
+                submit_novo = st.form_submit_button("Cadastrar Produto")
+                
+                if submit_novo:
+                    if not nome_prod or not marca:
+                        st.error("Por favor, preencha o Nome e a Marca!")
+                    else:
+                        try:
+                            codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
+                            novo_codigo = max(codigos) + 1 if codigos else 1
+                            nova_linha = [novo_codigo, nome_prod, marca, descricao, cat, preco, preco_compra, desconto, estoque_ini, subcat]
+                            ws.append_row(nova_linha)
+                            st.success(f"Produto {nome_prod} cadastrado com sucesso!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Erro ao salvar: {e}")
 
-# --- BLOCO: REPOR ESTOQUE (Fora do bloco try anterior) ---
-with st.expander("➕ Repor Estoque"):
-    try:
-        prod_repo = st.selectbox("Escolher produto:", lista_formatada, key="repo_prod")
-        cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
-        qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
-        
-        if st.button("Confirmar Reposição"):
+        # --- BLOCO: REPOR ESTOQUE ---
+        with st.expander("➕ Repor Estoque"):
             try:
-                # Busca o produto na Coluna 1
-                cell = ws.find(str(cod_repo), in_column=1)
-                # Lê o estoque atual na Coluna 9
-                estoque_atual = int(ws.cell(cell.row, 9).value)
+                prod_repo = st.selectbox("Escolher produto:", lista_formatada, key="repo_prod")
+                cod_repo = int(prod_repo.split(" - ")[0].replace("Cod ", ""))
+                qtd_repo = st.number_input("Quantidade para repor:", 1, 100, key="repo_qtd")
                 
-                # Atualiza a Coluna 9 somando a quantidade
-                ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
+                if st.button("Confirmar Reposição"):
+                    cell = ws.find(str(cod_repo), in_column=1)
+                    estoque_atual = int(ws.cell(cell.row, 9).value)
+                    ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
+                    st.success("Reposição feita!")
+                    st.rerun()
+            except Exception as e:
+                st.error(f"Erro na reposição: {e}")
                 
-                st.success(f"Reposição feita! Novo estoque: {estoque_atual + qtd_repo}")
-                st.rerun()
                except Exception as e:
         st.error(f"Erro na reposição: {e}")
                            
