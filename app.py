@@ -24,7 +24,7 @@ def set_background(url):
     )
 
 # Use o link da sua foto aqui:
-set_background("LINK_DA_SUA_FOTO_AQUI")
+set_background("https://sl.bing.net/RR3vglg7NI")
 
 
 # --- CONEXÃO GLOBAL (FORA DE QUALQUER IF OU ABA) ---
