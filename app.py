@@ -132,7 +132,7 @@ with aba1:
              preco_base = limpar_valor(row['Preco Venda'])
              desc = limpar_valor(row['Desconto'])
                 
-            preco_final = preco_base * (1 - desc/100)
+             preco_final = preco_base * (1 - desc/100)
             
             if desc > 0:
                 st.write(f"~~R$ {preco_base:.2f}~~")
