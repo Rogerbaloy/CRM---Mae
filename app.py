@@ -347,9 +347,7 @@ with aba3:
                             ws.append_row(nova_linha)
                             st.success(f"Produto {nome_prod} cadastrado com sucesso!")
                             st.rerun()
-                        except Exception as e:
-                            st.error(f"Erro ao salvar: {e}")
-
+                       
         # --- BLOCO: REPOR ESTOQUE ---
         with st.expander("➕ Repor Estoque"):
             try:
