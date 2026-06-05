@@ -129,6 +129,15 @@ aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Ge
 
 with aba1:
     st.subheader("🛍️ Nosso Catálogo")
+
+    # --- COLOQUE O FILTRO AQUI ---
+    if filtro_cat != "Todos":
+        df_exibicao = df_prod[df_prod['Categoria'] == filtro_cat]
+    else:
+        df_exibicao = df_prod
+    
+    # --- AGORA O LOOP USA O 'df_exibicao' ---
+    cols = st.columns(3)
     
     # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
     # Certifique-se de que o 'df_prod' está carregado
