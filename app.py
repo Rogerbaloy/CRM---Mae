@@ -1,11 +1,11 @@
-# --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
-if 'carrinho' not in st.session_state:
-    st.session_state.carrinho = []
 import streamlit as st
 import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+# --- INICIALIZAÇÃO DO ESTADO DA SESSÃO ---
+if 'carrinho' not in st.session_state:
+    st.session_state.carrinho = []
 
 # --- CONEXÃO GLOBAL (FORA DE QUALQUER IF OU ABA) ---
 secrets = st.secrets["gcp_service_account"]
