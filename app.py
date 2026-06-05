@@ -122,7 +122,16 @@ st.set_page_config(layout="wide")
 
 # Barra lateral para filtros de categoria
 st.sidebar.title("Categorias")
-filtro_cat = st.sidebar.radio("Selecione o que deseja ver:", ["Todos", "Perfumes", "Sapatos", "Óculos"])
+lista_categorias = df_prod['Categoria'].unique().tolist()
+categoria_selecionada = st.sidebar.selectbox("Escolha o Tipo:", ["Todos"] + lista_categorias)
+
+# 2. Filtro de Subcategoria (Dinâmico)
+if categoria_selecionada != "Todos":
+    # Filtra apenas as subcategorias que pertencem à categoria escolhida
+    sub_opcoes = df_prod[df_prod['Categoria'] == categoria_selecionada]['Subcategoria'].unique().tolist()
+    subcategoria_selecionada = st.sidebar.selectbox("Escolha o Detalhe:", ["Todos"] + sub_opcoes)
+else:
+    subcategoria_selecionada = "Todos"
 
 # ABAS
 aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
