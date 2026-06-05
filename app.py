@@ -181,18 +181,38 @@ with aba2:
     cpf_busca = st.text_input("Digite seu CPF (apenas números):")
     
     if cpf_busca:
-        # Busca nas vendas pelo CPF (precisaremos da coluna CPF na aba Vendas)
-        ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
-        df_vendas = pd.DataFrame(ws_vendas.get_all_records())
-        
-        # Filtra pelo CPF
-        compras_cliente = df_vendas[df_vendas['CPF'] == cpf_busca]
-        
-        if not compras_cliente.empty:
-            st.success(f"Encontramos {len(compras_cliente)} compra(s)!")
-            st.table(compras_cliente[['Data', 'Produto', 'Preco total']])
-        else:
-            st.warning("Nenhuma compra encontrada para este CPF.")         
+        try:
+            ws_vendas = client.open_by_key("1-NQNbRKtOeLtw47ThMkobuEwYN8TvFRcvVWgvst_-M0").worksheet("Vendas")
+            
+            # get_all_values() traz uma matriz pura, sem o Pandas tentar adivinhar nada
+            todos_os_dados = ws_vendas.get_all_values()
+            
+            # O cabeçalho é a primeira linha
+            cabecalho = todos_os_dados[0]
+            # Os dados são o restante
+            registros = todos_os_dados[1:]
+            
+            # Criamos o DataFrame manualmente para ter controle total
+            df = pd.DataFrame(registros, columns=cabecalho)
+            
+            # Limpeza do CPF (Remove espaços, traços e converte para string)
+            df['CPF'] = df['CPF'].astype(str).str.strip()
+            cpf_limpo = str(cpf_busca).strip()
+            
+            # Filtra
+            resultado = df[df['CPF'] == cpf_limpo]
+            
+            if not resultado.empty:
+                st.success(f"Encontramos {len(resultado)} compra(s)!")
+                # Exibimos apenas as colunas que interessam
+                st.table(resultado[['Data', 'Produto', 'Preco total']])
+            else:
+                st.warning("Nenhuma compra encontrada para este CPF.")
+                # Debug visual para você ver o que ele leu
+                st.write("CPFs lidos na planilha:", df['CPF'].unique())
+                
+        except Exception as e:
+            st.error(f"Erro ao buscar: {e}")         
 
         
 with aba3:
