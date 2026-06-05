@@ -314,35 +314,54 @@ with aba3:
                     # O st.rerun() é fundamental aqui para atualizar o catálogo na hora
                     st.rerun()
 
-            # --- BLOCO: CADASTRO DE NOVO PRODUTO ---
-            with st.expander("➕ Cadastro de Novo Produto"):
-                with st.form("form_cadastro_novo"):
-                    cat = st.selectbox("Categoria:", ["Masculino", "Feminino", "Infantil", "Outros"])
-                    nome_prod = st.text_input("Nome/Descrição do Produto:")
-                    marca = st.text_input("Marca:")
-                    preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
-                    preco_compra = st.number_input("Preco compra:",0.0,1000.0)
-                    estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+           # --- BLOCO: CADASTRO DE NOVO PRODUTO ATUALIZADO ---
+with st.expander("➕ Cadastro de Novo Produto"):
+    with st.form("form_cadastro_novo"):
+        # Ajuste nas categorias para refletir o seu novo filtro
+        cat = st.selectbox("Categoria:", ["Perfumes", "Sapatos", "Oculos", "Outros"])
+        subcat = st.text_input("Subcategoria (Ex: Masculino, Feminino):") # Campo novo
+        
+        nome_prod = st.text_input("Nome/Descrição do Produto:")
+        marca = st.text_input("Marca:")
+        # Adicionei um campo para a Descrição (coluna D da planilha)
+        descricao = st.text_input("Descrição detalhada:") 
+        
+        preco = st.number_input("Preço de Venda:", 0.0, 1000.0)
+        preco_compra = st.number_input("Preco compra:", 0.0, 1000.0)
+        desconto = st.number_input("Desconto (0 se não houver):", 0.0, 100.0)
+        estoque_ini = st.number_input("Estoque Inicial:", 0, 999)
+        
+        submit_novo = st.form_submit_button("Cadastrar Produto")
+        
+        if submit_novo:
+            if not nome_prod or not marca:
+                st.error("Por favor, preencha o Nome e a Marca!")
+            else:
+                try:
+                    codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
+                    novo_codigo = max(codigos) + 1 if codigos else 1
                     
-                    submit_novo = st.form_submit_button("Cadastrar Produto")
+                    # Ordem exata das colunas na sua Sheets (A até J):
+                    # Codigo(A), Produto(B), Marca(C), Descricao(D), Categoria(E), 
+                    # PrecoVenda(F), PrecoCompra(G), Desconto(H), Estoque(I), Subcategoria(J)
+                    nova_linha = [
+                        novo_codigo, 
+                        nome_prod, 
+                        marca, 
+                        descricao, 
+                        cat, 
+                        preco, 
+                        preco_compra, 
+                        desconto, 
+                        estoque_ini, 
+                        subcat
+                    ]
                     
-                    if submit_novo:
-                        if not nome_prod or not marca:
-                            st.error("Por favor, preencha o Nome e a Marca!")
-                        else:
-                            try:
-                                # Define um novo código baseando-se no maior código existente
-                                codigos = [int(row['Codigo']) for row in dados_produtos if str(row['Codigo']).isdigit()]
-                                novo_codigo = max(codigos) + 1 if codigos else 1
-                                
-                                # Prepara a linha (ajuste a ordem conforme suas colunas: Cod, Prod, Marca, Desc, Cat, PrecoV, PrecoC, Desc, Estoque)
-                                nova_linha = [novo_codigo, nome_prod, marca, nome_prod, cat, preco, 0.0, 0.0, preco_compra,0.0, estoque_ini]
-                                
-                                ws.append_row(nova_linha)
-                                st.success(f"Produto {nome_prod} cadastrado com sucesso!")
-                                st.rerun()
-                            except Exception as e:
-                                st.error(f"Erro ao salvar novo produto: {e}")
+                    ws.append_row(nova_linha)
+                    st.success(f"Produto {nome_prod} cadastrado com sucesso!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Erro ao salvar novo produto: {e}")
 
             # --- BLOCO: REPOR ESTOQUE ---
             with st.expander("➕ Repor Estoque"):
