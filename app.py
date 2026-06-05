@@ -378,9 +378,10 @@ with aba4:
                             nome_prod_formatado = row['Produto'].split(" - ")[1]
                             match = df_prod[df_prod['Produto'] == nome_prod_formatado]
                             if not match.empty:
-                                custo = float(match.iloc[0]['Preco compra'])
-                                preco_unitario = float(row['Preco total']) / float(row['Quantidade'])
-                                return (preco_unitario - custo) * float(row['Quantidade'])
+                                custo_unitario = float(match.iloc[0]['Preco compra'])
+                                preco_venda_unitario = float(row['Preco total']) / float(row['Quantidade'])
+                                # Lucro = (Preço Venda - Preço Compra) * Quantidade
+                                return (preco_venda_unitario - custo_unitario) * float(row['Quantidade'])
                             return 0
                         
                         df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
