@@ -361,9 +361,7 @@ with aba3:
                     ws.update_cell(cell.row, 9, estoque_atual + qtd_repo)
                     st.success("Reposição feita!")
                     st.rerun()
-            except Exception as e:
-                st.error(f"Erro na reposição: {e}")
-                
+                          
                except Exception as e:
         st.error(f"Erro na reposição: {e}")
                            
