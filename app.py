@@ -96,7 +96,7 @@ st.title(" ")
 # ABAS
 aba1, aba2, aba3, aba4 = st.tabs(["🛍️ Catálogo", "👤 Clientes", "🔐 Gestão", "📊 Relatórios"])
 
-with tab1:
+with aba1:
     st.subheader("🛍️ Nosso Catálogo")
     
     # Busca os produtos da planilha (deve estar conectado globalmente como 'ws' ou 'ws_prod')
