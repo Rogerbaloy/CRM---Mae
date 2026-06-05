@@ -388,6 +388,9 @@ with aba4:
                         
                         df_vendas['Lucro Total'] = df_vendas.apply(calcular_lucro, axis=1)
                         
+                        # --- AQUI ESTÁ O AJUSTE: ABRA AS COLUNAS ANTES ---
+                        col1, col2, col3 = st.columns(3)
+                        
                         # Coluna 1: Total Vendido
                         col1.metric("Total Vendido", f"R$ {df_vendas['Preco total'].sum():,.2f}")
                         
@@ -400,9 +403,9 @@ with aba4:
                         st.divider() # Adiciona uma linha horizontal para organizar
                         
                         st.subheader("Lucro por Cliente")
+                        # Mantenha apenas um st.bar_chart (você tinha repetido no código)
                         st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
                         
-                        st.bar_chart(df_vendas.groupby('Cliente')['Lucro Total'].sum())
                     else:
                         st.info("Nenhuma venda registrada.")
                 except Exception as e:
