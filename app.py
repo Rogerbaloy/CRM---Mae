@@ -25,7 +25,7 @@ def set_background(url):
 )
 
 # Use o link da sua foto aqui:
-set_background("https://sl.bing.net/RR3vglg7NI")
+set_background("https://static.vecteezy.com/system/resources/thumbnails/005/569/278/small_2x/online-shopping-store-on-website-and-mobile-phone-design-smart-business-marketing-valentine-s-day-concept-horizontal-view-illustration-vector.jpg")
 
 
 # --- CONEXÃO GLOBAL (FORA DE QUALQUER IF OU ABA) ---
